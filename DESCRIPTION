@@ -1,12 +1,15 @@
 Package: TriLLIEM
 Type: Package
-Title: Log-linear analysis of triad genotype data
+Title: Log-Linear Modelling of Triad Genotype Data
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Authors@R: c(
+    person("Kevin Heda", "Zhao", email = "kzhao097@uottawa.ca", role = c("aut", "cre")),
+    person("Kelly", "Burkett", email = "kburkett@uottawa.ca", role = "aut"))
+Description: An implementation of the Poisson log-linear model
+    for estimating disease risk based on child, maternal, and
+    parent-of-origin effects, as well as gene-environment
+    interactions.
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Imports: 
