@@ -1,5 +1,0 @@
-"0","includeHaplin = TRUE # TRUE for Haplin, FALSE for no Haplin"
-"0","includeEMIM = FALSE # TRUE for EMIM, FALSE for no EMIM"
-"0","includeParallel = TRUE # TRUE for parallelization, FALSE for no parallelization"
-"0","cores <- 10 # Number of cores to use if includeParallel is TRUE"
-"0","EMIM_path <- paste0(""~/EMIM/"") ## CHANGE THIS TO THE PATH FOR THE EMIM DIRECTORY"
