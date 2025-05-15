@@ -1,0 +1,24 @@
+{
+    "id": "36BC73F0",
+    "path": "~/github_repos/MSc_Thesis/TriLLIEM/R/getHWE.R",
+    "project_path": "R/getHWE.R",
+    "type": "r_source",
+    "hash": "134343456",
+    "contents": "",
+    "dirty": false,
+    "created": 1743793141660.0,
+    "source_on_save": false,
+    "relative_order": 19,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1719441514,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1719441514,
+    "read_only": false,
+    "read_only_alternatives": []
+}

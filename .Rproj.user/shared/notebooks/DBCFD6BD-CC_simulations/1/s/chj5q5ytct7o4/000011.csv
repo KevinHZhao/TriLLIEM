@@ -1,0 +1,36 @@
+"0","bias_emim <-
+  lapply(
+    X = 1:3,
+    FUN = function(j) {
+      df <- lapply(
+        X = 1:nrow(conditions),
+        FUN = function(i, j) {
+          with(conditions,
+               get_bias_emim(
+                 results = emim_results[[j]][[i]],
+                 C = R[i],
+                 M = S[i],
+                 V = V[i],
+                 Im = Im[i],
+                 If = If[i]
+               ))
+        },
+        j = j
+      ) %>%
+        lapply(as.data.frame.list) %>%
+        bind_rows()
+        # rename(
+        #   paste0(""bias_C_"", mt[[j]]) = ""C"",
+        #   paste0(""bias_M_"", mt[[j]]) = ""M"",
+        #   paste0(""bias_E:Im_"", mt[[j]]) = ""E.Im"",
+        #   paste0(""bias_E:If_"", mt[[j]]) = ""E.If"",
+        #   paste0(""bias_Im_"", mt[[j]]) = ""Im"",
+        #   paste0(""bias_If_"", mt[[j]]) = ""If""
+        # )
+      colnames(df) <- paste0(""bias_emim_"", colnames(df), ""_"", mt[[j]])
+      return(df)
+    }
+  )
+"
+"2","Error in colMeans(.) : 'x' must be numeric
+"

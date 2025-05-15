@@ -1,0 +1,38 @@
+---
+title: "rec_and_dom_issues"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{rec_and_dom_issues}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(TriLLIEM)
+library(dplyr)
+```
+
+Imprinting modelling suffers a lot from non-additive child/maternal effects.  Here is an example comparison:
+
+```{r}
+child_add_dat <- simulateData(ntrios = 100000, R = c(1,4,16), includeIm = TRUE, Im = 2, includeE = TRUE, prE = 0.5)
+child_rec_dat <- simulateData(ntrios = 100000, R = c(1,1,16), includeIm = TRUE, Im = 2, includeE = TRUE, prE = 0.5)
+child_dom_dat <- simulateData(ntrios = 100000, R = c(1,16,16), includeIm = TRUE, Im = 2, includeE = TRUE, prE = 0.5)
+
+add_res <- suppressMessages(heteroEM(dat = child_add_dat$dat4R, max.iter = 30))
+rec_res <- suppressMessages(heteroEM(dat = child_rec_dat$dat4R, max.iter = 30))
+dom_res <- suppressMessages(heteroEM(dat = child_dom_dat$dat4R, max.iter = 30))
+
+
+exp(add_res$coefficients["matOrgInf"])
+exp(rec_res$coefficients["matOrgInf"])
+exp(dom_res$coefficients["matOrgInf"])
+```
+

@@ -1,0 +1,28 @@
+{
+    "id": "3F5DF49D",
+    "path": null,
+    "project_path": null,
+    "type": "object_explorer",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1745311037598.0,
+    "source_on_save": false,
+    "relative_order": 26,
+    "properties": {
+        "id": "e56f981fd58f478eaeb1e9948b539952",
+        "name": "hap_results",
+        "title": "hap_results",
+        "language": "R",
+        "source_window_id": "",
+        "Source": "Source"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 93834563119104,
+    "encoding": "",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1745311037598,
+    "read_only": false,
+    "read_only_alternatives": []
+}

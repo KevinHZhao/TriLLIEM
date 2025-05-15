@@ -1,0 +1,26 @@
+{
+    "id": "97F2EBDD",
+    "path": "~/github_repos/MSc_Thesis/TriLLIEM/R/runEMIM.R",
+    "project_path": "R/runEMIM.R",
+    "type": "r_source",
+    "hash": "2853162568",
+    "contents": "",
+    "dirty": false,
+    "created": 1723141275096.0,
+    "source_on_save": false,
+    "relative_order": 7,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "2,0",
+        "scrollLine": "0"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1733988973,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1733988973135,
+    "read_only": false,
+    "read_only_alternatives": []
+}

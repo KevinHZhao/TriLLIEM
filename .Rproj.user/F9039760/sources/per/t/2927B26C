@@ -1,0 +1,27 @@
+{
+    "id": "2927B26C",
+    "path": "~/github_repos/MSc_Thesis/TriLLIEM/vignettes/simulation-tests.Rmd",
+    "project_path": "vignettes/simulation-tests.Rmd",
+    "type": "r_markdown",
+    "hash": "1474381726",
+    "contents": "",
+    "dirty": false,
+    "created": 1745311211368.0,
+    "source_on_save": false,
+    "relative_order": 27,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "6,27",
+        "scrollLine": "0",
+        "last_setup_crc32": ""
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1736377403,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1736377403,
+    "read_only": false,
+    "read_only_alternatives": []
+}

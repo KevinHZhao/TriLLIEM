@@ -1,0 +1,3 @@
+"0","tril_results <- readRDS(""All_results/TriLLIEM_res.RDS"")"
+"0","hap_results <- readRDS(""All_results/Haplin_res.RDS"")"
+"0","emim_results <- readRDS(""All_results/EMIM_res.RDS"")"

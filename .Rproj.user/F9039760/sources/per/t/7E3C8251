@@ -1,0 +1,28 @@
+{
+    "id": "7E3C8251",
+    "path": null,
+    "project_path": null,
+    "type": "object_explorer",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1745310938755.0,
+    "source_on_save": false,
+    "relative_order": 25,
+    "properties": {
+        "id": "8ea2c2aa91fb4d419162d0d62d46102f",
+        "name": "tril_results",
+        "title": "tril_results",
+        "language": "R",
+        "source_window_id": "",
+        "Source": "Source"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 93834563021825,
+    "encoding": "",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1745310938755,
+    "read_only": false,
+    "read_only_alternatives": []
+}

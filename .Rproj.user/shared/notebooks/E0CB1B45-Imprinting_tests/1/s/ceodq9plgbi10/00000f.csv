@@ -1,0 +1,3 @@
+"0","## effects can include ""C"", ""M"", ""Im"", ""If"", but not all three of ""C"", ""Im"" and ""If"""
+"0","## Haplin parameterization REQUIRES ""Im"" and ""If"""
+"0","effects <- c(""C"", ""M"")"
