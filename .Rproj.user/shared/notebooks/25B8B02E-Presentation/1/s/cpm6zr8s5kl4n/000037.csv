@@ -1,3 +1,0 @@
-"0","sapply(X = results_HWE, FUN = function(X) X[,1]) %>% "
-"0","  t() %>% "
-"0","  boxplot(horizontal = TRUE, col = palette.colors(5)[-1])"

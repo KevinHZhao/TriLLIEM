@@ -1,6 +1,0 @@
-"0","tril_results_PS <- readRDS(""All_results/TriLLIEM_res_PS.RDS"")"
-"0","hap_results_PS <- readRDS(""All_results/Haplin_res_PS.RDS"")"
-"0","emim_results_PS <- readRDS(""All_results/EMIM_res_PS.RDS"")"
-"0",""
-"0","## For PS tests, should look at hybrid model paper or genexenv has examples with two pops"
-"0","## Test with PoO and PoO:E as well"
