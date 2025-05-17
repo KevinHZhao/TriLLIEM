@@ -109,7 +109,7 @@ TriLLIEM <- function(mtmodel = "MS", effects = c("C", "M"), dat, PStest = FALSE,
   } else {
     # If includeE is FALSE, treat all counts as unexposed
     dat <- dat %>%
-      summarize(count = sum(count), .by = c(-E, -count)) %>%
+      dplyr::summarize(count = base::sum(count), .by = c(-E, -count)) %>%
       dplyr::mutate(E = 0)
   }
 
@@ -121,13 +121,13 @@ TriLLIEM <- function(mtmodel = "MS", effects = c("C", "M"), dat, PStest = FALSE,
       dplyr::mutate(C = C * D,
                     M = M * D)
     Deffects <- c("D", if (includeE) "E:D")
-  } else if (sum(dat$D == 0) != 0) {
+  } else if (base::sum(dat$D == 0) != 0) {
     base::warning("Control trios detected but includeD set to FALSE.  Ignoring all control trios...\n")
     dat <- dat %>% dplyr::filter(D != 0)
   }
 
   # Portion of model equation and offset depends on mating type model
-  origDat <- add_PoO_data(dat, Mprop = c(Minit, if (includeE) Minit), includeE = includeE)
+  origDat <- TriLLIEM:::add_PoO_data(dat, Mprop = c(Minit, if (includeE) Minit), includeE = includeE)
 
   modeleffects <- c(mteffect, Eeffects, Deffects, effects)
 
