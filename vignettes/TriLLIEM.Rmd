@@ -1,0 +1,128 @@
+---
+title: "TriLLIEM"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{TriLLIEM}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Initial setup
+
+To get started with using \textbf{TriLLIEM}, we first install and load the package from GitHub via the following commands:
+
+```{r setup}
+devtools::install_github("KevinHZhao/TriLLIEM")
+library(TriLLIEM)
+```
+
+## Simulating triad data
+
+Simulating data in \textbf{TriLLIEM} is all performed through the \texttt{simulateData()} function.
+For example, we can simulate $1,000$ case-triads from a population under HWE with a minor allele frequency of $30\%$, $S = 1.2$ and no other genetic factors by using the commands:
+
+```{r simplesim}
+set.seed(123) # setting random seed for reproducibility
+matdat <- 
+  simulateData(
+    ntrios = 1000,
+    maf = 0.3,
+    mtCoef = c(1,1,1),
+    S = c(1, 1.2, 1.2^2)
+  )$dat4R # extract data formatted for TriLLIEM
+## simulateData also returns data formatted for EMIM and Haplin
+```
+
+More complex simulations can also be run.
+For example, consider the following conditions:
+
+* $1,000$ case-triads
+* $1,000$ control-triads
+* $30\%$ minor allele frequency
+* $(C_1, C_2, C_4) = c(0.5,0.5,0.5)$
+* $S=1.2$
+* $I_{\textrm{M}} = 1.4$
+* $30\%$ environmental exposure frequency in the population
+* $V = 1.5$ with maternal imprinting by environment interactions
+
+We can obtain the appropriate simulated data by running:
+```{r complexsim}
+impdat <-
+  simulateData(
+    ntrios = 2000,
+    maf = 0.3,
+    S = c(1, 1.2, 1.2^2),
+    V = c(1, 1.5, 1.5^2),
+    mtCoef = c(0.5, 0.5, 0.5),
+    Im = 1.4,
+    includeE = TRUE,
+    Einteraction = "Im",
+    propE = 0.3,
+    includeControl = TRUE,
+    nControl = 1000
+  )$dat4R
+```
+
+## Analyzing triad data
+
+Analyzing triad data sets is performed through the \texttt{TriLLIEM()} function.
+This function takes a vector of characters for effects to include in the model, \texttt{effects}.
+It also allows users to specify the mating type model to use, and whether to use the stratified or non-stratified approach for environmental interactions (non-stratified by default).
+With the first simulated data set above, an appropriate model would use an HWE mating type model with maternal effects only, hence we would run the command:
+```{r simpleres}
+matres <-
+  TriLLIEM(
+    mtmodel = "HWE",
+    effects = c("M"),
+    dat = matdat
+  )
+```
+The \texttt{TriLLIEM()} function returns an object of class \texttt{TriLLIEM}, which inherits from the \texttt{glm} object in R.
+This means users can apply many of the usual functions for interpreting results from the \texttt{glm()} function.
+To interpret \texttt{matres}, we would run:
+```{r simpleinterp}
+matres %>% summary() %>% coef()
+```
+The "Estimate" column for the $\textrm{M}$ row represents our point estimate for $s$, which we can exponentiate to obtain the equivalent risk parameter, $S$.
+Based on these results, the model estimates $\hat{S} = 1.24$ with a p-value of $0.00163$.
+Since the data were simulated for a population with $S = 1.2$, this level of significance is expected.
+
+Likewise, for the \texttt{impdat} data, we would use an MaS mating type model, with $\textrm{S}, I_{\textrm{M}}, \textrm{E}:\textrm{M}$ as genetic effects in the hybrid model.
+
+```{r complexres}
+impres <-
+  TriLLIEM(
+    mtmodel = "MaS",
+    effects = c("M", "Im"),
+    dat = impdat,
+    includeE = TRUE,
+    Einteraction = "Im",
+    includeD = TRUE
+  )
+impres %>% summary() %>% coef()
+```
+From the results for genetic effects, the model estimates $\hat{\textrm{S}} = 1.19, \hat{I}_{\textrm{M}} = 1.33, \hat{V} = 1.50$ with respective p-values $0.0594, 0.0199, 0.0269$.
+Note that these results use the non-stratified approach.
+For results equivalent to the stratified approach that are equivalent to \textbf{EMIM} and \textbf{Haplin}, we use:
+```{r complexres_strat}
+impres_strat <-
+  TriLLIEM(
+    mtmodel = "MaS",
+    effects = c("M", "Im"),
+    dat = impdat,
+    includeE = TRUE,
+    Einteraction = "Im",
+    Estrat = TRUE,
+    includeD = TRUE
+  )
+impres_strat %>% summary() %>% coef()
+```
+This model (which is adds a $\textrm{E}:\text{M}$ effect due to stratification), has $\hat{S} = 1.18$, $\hat{I}_\textrm{M} = 1.34$, and $\hat{V} = 1.46$, with respective p-values $0.0135, 0.0237, 0.0121$.
+Note that for comparison with \textbf{EMIM} and \textbf{Haplin}, we can only compare the $\hat{V}$ estimates, since the stratified approach does not produce equivalent estimates for the main effects.
