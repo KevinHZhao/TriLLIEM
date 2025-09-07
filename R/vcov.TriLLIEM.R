@@ -1,4 +1,4 @@
-## Calculates the Fisher info matrix, only for the imprinting case
+## Calculates the Fisher info matrix, accounting for EM
 
 #' Title
 #'
@@ -14,7 +14,7 @@ vcov.TriLLIEM <- function(res, proven = FALSE) {
   ## IX is the 16-row info matrix
   ## IY is the 15-row info matrix
 
-  n <- nobs(res)
+  n <- length(res$y)
 
   if(n %% 16 != 0) {
     return(NextMethod())

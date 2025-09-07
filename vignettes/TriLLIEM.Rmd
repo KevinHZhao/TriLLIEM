@@ -16,12 +16,17 @@ knitr::opts_chunk$set(
 
 ## Initial setup
 
-To get started with using \textbf{TriLLIEM}, we first install and load the package from GitHub via the following commands:
+To get started with using \textbf{TriLLIEM}, we install from GitHub via the following commands:
 
-```{r setup}
+```{r setup, eval=FALSE}
 devtools::install_github("KevinHZhao/TriLLIEM")
+```
+
+Then we load the package with
+```{r load_package}
 library(TriLLIEM)
 ```
+
 
 ## Simulating triad data
 
@@ -94,7 +99,7 @@ The "Estimate" column for the $\textrm{M}$ row represents our point estimate for
 Based on these results, the model estimates $\hat{S} = 1.24$ with a p-value of $0.00163$.
 Since the data were simulated for a population with $S = 1.2$, this level of significance is expected.
 
-Likewise, for the \texttt{impdat} data, we would use an MaS mating type model, with $\textrm{S}, I_{\textrm{M}}, \textrm{E}:\textrm{M}$ as genetic effects in the hybrid model.
+Likewise, for the \texttt{impdat} data, we would use an MaS mating type model, with $\textrm{S}, I_{\textrm{M}}, \textrm{E}:_{\textrm{M}}$ as genetic effects in the hybrid model.
 
 ```{r complexres}
 impres <-
@@ -124,5 +129,18 @@ impres_strat <-
   )
 impres_strat %>% summary() %>% coef()
 ```
-This model (which is adds a $\textrm{E}:\text{M}$ effect due to stratification), has $\hat{S} = 1.18$, $\hat{I}_\textrm{M} = 1.34$, and $\hat{V} = 1.46$, with respective p-values $0.0135, 0.0237, 0.0121$.
+This model (which adds a $\textrm{E}:\text{M}$ effect due to stratification), has $\hat{S} = 1.18$, $\hat{I}_\textrm{M} = 1.34$, and $\hat{V} = 1.46$, with respective p-values $0.0135, 0.0237, 0.0121$.
 Note that for comparison with \textbf{EMIM} and \textbf{Haplin}, we can only compare the $\hat{V}$ estimates, since the stratified approach does not produce equivalent estimates for the main effects.
+
+## Likelihood ratio tests
+
+\textbf{TriLLIEM} allows users to compute log-likelihoods and perform likelihood ratio tests with the `anova()` function, similar to typical glm's.
+For example, we can construct two MS models for `example_dat4R`, one with effects $\textrm{C}, \textrm{M}$, and another that is nested with effects $\textrm{C}, \textrm{M}, I_{\textrm{M}}$.
+```{r model_compare_fit}
+model_1 <- TriLLIEM(dat = example_dat4R, effects = c("C", "M"))
+model_2 <- TriLLIEM(dat = example_dat4R, effects = c("C", "M", "Im"))
+```
+Then to compare the two models using the likelihood ratio test, we simply run:
+```{r model_anova}
+anova(model_1, model_2, test = "LRT")
+```

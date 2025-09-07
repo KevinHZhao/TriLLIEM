@@ -34,7 +34,7 @@
 #' @param EM.diag A logical value indicating whether to show diagnostic messages
 #' for the EM algorithm.
 #'
-#' @return An object of class "`glm`".
+#' @return An object of class "`TriLLIEM`", which inherits from class "`glm`".
 #' @export
 #'
 #' @examples
@@ -135,6 +135,9 @@ TriLLIEM <- function(mtmodel = "MS", effects = c("C", "M"), dat, PStest = FALSE,
                    collapse = "+")
   modelformula <- paste0(modelformula, linpred)
 
+  ## groupings of categories for em
+  grp <- list()
+
   # Setup results objects
   resVec <- vector(length = length(effects))
   names(resVec) <- effects
@@ -159,10 +162,21 @@ TriLLIEM <- function(mtmodel = "MS", effects = c("C", "M"), dat, PStest = FALSE,
     }
   }
 
+  ## Groupings for EM
+  grp <- c(grp, list(c(9,10)))
+  if (includeE || includeD) {
+    grp <- c(grp, list(c(25,26)))
+  }
+  if (includeE && includeD) {
+    grp <- c(grp, list(c(41,42)))
+    grp <- c(grp, list(c(57,58)))
+  }
+
   # Run model and save results
 
   # EM for Imprinting, using same stopping criteria as Haplin...
   if(any(c("Im", "If") %in% effects)){
+
     counter <- 0
     if(EM.diag){
       message(paste0("Initial proportion for maternal inheritance cell = ", Minit))
@@ -172,7 +186,7 @@ TriLLIEM <- function(mtmodel = "MS", effects = c("C", "M"), dat, PStest = FALSE,
     repeat{
       counter <- counter + 1
       res <- suppressWarnings(
-        glm(as.formula(modelformula), data = origDat, family = poisson(), x = TRUE)
+        glm(as.formula(modelformula), data = origDat, family = poisson_em(grp = grp), x = TRUE)
       )
       class(res) <- c("TriLLIEM", "glm", "lm")
 
@@ -241,10 +255,19 @@ TriLLIEM <- function(mtmodel = "MS", effects = c("C", "M"), dat, PStest = FALSE,
     ## Compare EM with emax.glm performance
     ## Data abstraction and problem solving with cpp Chpt 1
   } else {
-    ## Only include offset in this case when we don't split the 1,1,1 cell
-    res <- glm(as.formula(modelformula), data = dat, offset=log(dat$offset), family = poisson())
+    ## Only include offset if we don't split the 1,1,1 cell
+    ## I'm going to keep using the split 1,1,1 cell always so that anova LRT's work.
+    ## EM doesn't happen in this case
+    #res <- glm(as.formula(modelformula), data = dat, offset=log(dat$offset), family = poisson_em(grp = grp))
+    res <- glm(as.formula(modelformula), data = origDat, family = poisson_em(grp = grp), x = TRUE)
     class(res) <- c("TriLLIEM", "glm", "lm")
   }
+
+  ## Accounting for the fact that some observations were not observed...
+  res$y_initial <- dat %>% dplyr::select(type, mt_MS, mt_MaS, M, F, C, D, E, count, offset)
+  res$grp <- grp
+  res$df.null <- res$df.null - length(grp)
+  res$df.residual <- res$df.residual - length(grp)
 
   # R is not consistent about how interaction is specified. Even though it
   # is fit as E:M, sometimes R flips it to M:E in the output of results.

@@ -68,7 +68,7 @@ heterozygote cell by if the EM algorithm is necessary.}
 for the EM algorithm.}
 }
 \value{
-An object of class "\code{glm}".
+An object of class "\code{TriLLIEM}", which inherits from class "\code{glm}".
 }
 \description{
 Running a loglinear analysis of trio data.

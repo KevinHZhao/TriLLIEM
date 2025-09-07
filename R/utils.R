@@ -479,3 +479,39 @@ createPed <- function(dat) {
 
   return(finaldat)
 }
+
+sum_grp <- function(x, grp){
+  replace_inds <- unlist(lapply(grp, min))
+  remove_inds <- setdiff(unlist(grp), replace_inds)
+  sums <-
+    unlist(
+      lapply(
+        grp,
+        function(y) sum(x[y])
+      )
+    )
+  x[replace_inds] <- sums
+  if (length(remove_inds) > 0){
+    x <- x[-remove_inds]
+  }
+  names(x) <- 1:length(x)
+  return(x)
+}
+
+mean_grp <- function(x, grp){
+  replace_inds <- unlist(lapply(grp, min))
+  remove_inds <- setdiff(unlist(grp), replace_inds)
+  means <-
+    unlist(
+      lapply(
+        grp,
+        function(y) mean(x[y])
+      )
+    )
+  x[replace_inds] <- means
+  if (length(remove_inds) > 0){
+    x <- x[-remove_inds]
+  }
+  names(x) <- 1:length(x)
+  return(x)
+}
