@@ -4,7 +4,7 @@
 \alias{anova.TriLLIEM}
 \title{Analysis of Deviance for TriLLIEM objects}
 \usage{
-\method{anova}{TriLLIEM}(object, ..., dispersion = NULL, test = NULL)
+\method{anova}{TriLLIEM}(object, ..., dispersion = NULL, test = "LRT")
 }
 \arguments{
 \item{test}{}

@@ -17,6 +17,9 @@
 #' interact with.  Can be "`Im`", "`If`", "`C`", or "`M`".
 #' @param Estrat A logical value indicating whether to use a stratified approach
 #' for environmental interactions equivalent to that of EMIM and/or Haplin.
+#' @param Eanova A logical value indicating if this is for the sake of running
+#' anova on a data set with a non-zero "`E`" column but without "`E`" effects.  Should
+#' be left as "`FALSE`" otherwise, as the degrees of freedom will be incorrect.
 #' @param includeD A logical value indicating whether to use the hybrid
 #' model with controls.  If set to "`FALSE`", any control trios will be removed
 #' from the data set prior to analysis.
@@ -41,7 +44,7 @@
 #' res <- TriLLIEM(mtmodel = "HWE", effects = c("C", "M", "Im"), dat = example_dat4R)
 #' res %>% summary() %>% coef()
 TriLLIEM <- function(mtmodel = "MS", effects = c("C", "M"), dat, PStest = FALSE,
-                     includeE = FALSE, Einteraction = "M", Estrat = FALSE,
+                     includeE = FALSE, Einteraction = "M", Estrat = FALSE, Eanova = FALSE,
                      includeD = FALSE, includeIm = FALSE,
                      includeIf = FALSE, Minit = 0.5, max.iter = 30, EM.diag = FALSE) {
   ## Test for violation of HWE when pop strat (sim MS data and compare HWE vs MS)
@@ -72,6 +75,8 @@ TriLLIEM <- function(mtmodel = "MS", effects = c("C", "M"), dat, PStest = FALSE,
     stop("D column must have at least 2 distinct values.")
   }
 
+  cal <- match.call()
+
   # Portion of model equation depends on mating type model
   dat <- dat %>% dplyr::mutate(offset = dplyr::case_when(type == 9 ~ 2, .default = 1))
   if (mtmodel == "HWE") {
@@ -92,6 +97,7 @@ TriLLIEM <- function(mtmodel = "MS", effects = c("C", "M"), dat, PStest = FALSE,
 
   # Environmental effects
   Eeffects <- c()
+  hasE <- FALSE
   if(includeE){
     ## If we want the same results as the stratified approach of emim and haplin, MUST include E:everything,
     ## otherwise, don't include by default to save on power
@@ -106,11 +112,16 @@ TriLLIEM <- function(mtmodel = "MS", effects = c("C", "M"), dat, PStest = FALSE,
         paste0(":E", sep = "") %>%
         {if(mtmodel == "HWE") append(., "E") else .}
     }
-  } else {
-    # If includeE is FALSE, treat all counts as unexposed
+  } else if (!Eanova) {
+    # If includeE is FALSE and not using Eanova, treat all counts as unexposed
     dat <- dat %>%
       dplyr::summarize(count = base::sum(count), .by = c(-E, -count)) %>%
       dplyr::mutate(E = 0)
+  } else {
+    # If includeE is FALSE but we're still using Eanova
+    if (any(dat$E != 0)) {
+      hasE <- TRUE
+    }
   }
 
   # Hybrid model
@@ -127,7 +138,7 @@ TriLLIEM <- function(mtmodel = "MS", effects = c("C", "M"), dat, PStest = FALSE,
   }
 
   # Portion of model equation and offset depends on mating type model
-  origDat <- TriLLIEM:::add_PoO_data(dat, Mprop = c(Minit, if (includeE) Minit), includeE = includeE)
+  origDat <- TriLLIEM:::add_PoO_data(dat, Mprop = c(Minit, if (includeE || hasE) Minit), includeE = (includeE || hasE))
 
   modeleffects <- c(mteffect, Eeffects, Deffects, effects)
 
@@ -175,9 +186,9 @@ TriLLIEM <- function(mtmodel = "MS", effects = c("C", "M"), dat, PStest = FALSE,
   # Run model and save results
 
   # EM for Imprinting, using same stopping criteria as Haplin...
-  if(any(c("Im", "If") %in% effects)){
+  counter <- 0
 
-    counter <- 0
+  if(any(c("Im", "If") %in% effects)){
     if(EM.diag){
       message(paste0("Initial proportion for maternal inheritance cell = ", Minit))
     }
@@ -221,10 +232,10 @@ TriLLIEM <- function(mtmodel = "MS", effects = c("C", "M"), dat, PStest = FALSE,
                        "\nMax difference in coefficients: ", max(abs(coef(res) - prev_coeffs))))
       }
 
-      origDat <- add_PoO_data(dat,
+      origDat <- TriLLIEM:::add_PoO_data(dat,
                               Mprop = c(Imhat/(Ifhat + Imhat),
-                                        if (includeE) ImEhat*Imhat/(ImEhat*Imhat + IfEhat*Ifhat)),
-                              includeE = includeE
+                                        {if (includeE) ImEhat*Imhat/(ImEhat*Imhat + IfEhat*Ifhat) else if (hasE) Imhat/(Ifhat + Imhat)}),
+                              includeE = (includeE || hasE)
                               )
       ## Use a proper deviance function for imprinting
       ## Check Haplin LogLik code
@@ -263,6 +274,8 @@ TriLLIEM <- function(mtmodel = "MS", effects = c("C", "M"), dat, PStest = FALSE,
     class(res) <- c("TriLLIEM", "glm", "lm")
   }
 
+  res$EM_iter <- counter
+
   ## Accounting for the fact that some observations were not observed...
   res$y_initial <- dat %>% dplyr::select(type, mt_MS, mt_MaS, M, F, C, D, E, count, offset)
   res$grp <- grp
@@ -291,5 +304,6 @@ TriLLIEM <- function(mtmodel = "MS", effects = c("C", "M"), dat, PStest = FALSE,
   #   }
   # }
 
+  res$call <- cal
   return(res)
 }

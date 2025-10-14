@@ -10,7 +10,7 @@
 #' @export
 #'
 #' @examples
-anova.TriLLIEM <- function (object, ..., dispersion = NULL, test = NULL) {
+anova.TriLLIEM <- function (object, ..., dispersion = NULL, test = "LRT") {
   res <- stats:::anova.glm(object, ..., dispersion = dispersion, test = test)
   ## ANOVA will not call TriLLIEM(), instead it directly uses glm.fit, meaning
   ## df's will be incorrectly shifted for certain effects...
@@ -22,6 +22,7 @@ anova.TriLLIEM <- function (object, ..., dispersion = NULL, test = NULL) {
   res[nrow(res), "Df"] <- res[nrow(res), "Df"] - df_shift
 
   ## Using code from anova.glm
+  ## Only using LRT chisq, so limit to just that, remove F test
   fam <- object$family
   if (is.null(test)) {
     test <- if (!is.null(dispersion))
@@ -54,5 +55,13 @@ anova.TriLLIEM <- function (object, ..., dispersion = NULL, test = NULL) {
   ## Correcting res with the proper test
   res[, ncol(res)] <- anova_res[, ncol(anova_res)]
 
+  coefs <- coef(x)
+  regex_filter <-
+    "^as\\.factor\\(mt\\_MS\\)[1-6](\\:E)?$|^\\(Intercept\\)$|^HWgeno(\\:E)?$|^as\\.factor\\(mt\\_MaS\\)[1-9](\\:E)?$|^E$|^D$|^E\\:D$"
+  positions <- grep(regex_filter, names(coefs))
+  pasted_factors <- paste(names(coefs)[-positions], collapse = ", ")
+
+  class(res) <- c("anova.TriLLIEM", class(res))
+  attr(res, "heading") <- paste0("Analysis of Deviance Table\n\nFactors included in model: ", pasted_factors, "\n\nResponse: count \n\nTerms added sequentially (first to last)\n\n")
   return(res)
 }

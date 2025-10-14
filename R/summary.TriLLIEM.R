@@ -33,7 +33,7 @@ summary.TriLLIEM <- function (object)
   }
   keep <- match(c("call", "terms", "family", "deviance", "aic",
                   "contrasts", "df.residual", "null.deviance", "df.null",
-                  "iter", "na.action"), names(object), 0L)
+                  "iter", "EM_iter", "na.action"), names(object), 0L)
   ans <- c(
     object[keep],
     list(
