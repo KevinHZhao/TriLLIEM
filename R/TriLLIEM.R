@@ -175,10 +175,10 @@ TriLLIEM <- function(mtmodel = "MS", effects = c("C", "M"), dat, PStest = FALSE,
 
   ## Groupings for EM
   grp <- c(grp, list(c(9,10)))
-  if (includeE || includeD) {
+  if (includeE || hasE || includeD) {
     grp <- c(grp, list(c(25,26)))
   }
-  if (includeE && includeD) {
+  if ((includeE || hasE) && includeD) {
     grp <- c(grp, list(c(41,42)))
     grp <- c(grp, list(c(57,58)))
   }
