@@ -4,11 +4,19 @@
 \alias{nobs.TriLLIEM}
 \title{Accessing number of observations in TriLLIEM objects}
 \usage{
-\method{nobs}{TriLLIEM}(object, ...)
+\method{nobs}{TriLLIEM}(object)
 }
 \arguments{
-\item{...}{}
+\item{object}{a \code{TriLLIEM} object}
+}
+\value{
+an integer representing the number of observations in the data used
+to get \code{object}.
 }
 \description{
 Accessing number of observations in TriLLIEM objects
+}
+\examples{
+model <- TriLLIEM(dat = example_dat4R)
+nobs(model)
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/runHaplin.R
 \name{runHaplin}
 \alias{runHaplin}
-\title{Title}
+\title{Run Haplin on a data set}
 \usage{
 runHaplin(
   effects = c("C", "M"),
@@ -17,6 +17,6 @@ runHaplin(
 \item{verbose}{}
 }
 \description{
-Title
+Run Haplin on a data set
 }
 \keyword{internal}

@@ -12,6 +12,7 @@ TriLLIEM(
   includeE = FALSE,
   Einteraction = "M",
   Estrat = FALSE,
+  Eanova = FALSE,
   includeD = FALSE,
   includeIm = FALSE,
   includeIf = FALSE,
@@ -31,6 +32,7 @@ in the model.  Example effects include:
 \item{"\code{M}"}{Maternal effects.}
 \item{"\code{Im}"}{Maternal imprinting effects.}
 \item{"\code{If}"}{Paternal imprinting effects.}
+\item{"\code{E:Im}"}{Maternal imprinting by environment interactions.}
 }}
 
 \item{dat}{A data frame with triad data, with the formatting of
@@ -48,6 +50,10 @@ interact with.  Can be "\code{Im}", "\code{If}", "\code{C}", or "\code{M}".}
 
 \item{Estrat}{A logical value indicating whether to use a stratified approach
 for environmental interactions equivalent to that of EMIM and/or Haplin.}
+
+\item{Eanova}{A logical value indicating if this is for the sake of running
+anova on a data set with a non-zero "\code{E}" column but without "\code{E}" effects.  Should
+be left as "\code{FALSE}" otherwise, as the degrees of freedom will be incorrect.}
 
 \item{includeD}{A logical value indicating whether to use the hybrid
 model with controls.  If set to "\code{FALSE}", any control trios will be removed
@@ -75,5 +81,5 @@ Running a loglinear analysis of trio data.
 }
 \examples{
 res <- TriLLIEM(mtmodel = "HWE", effects = c("C", "M", "Im"), dat = example_dat4R)
-res \%>\% summary() \%>\% coef()
+res |> summary() |> coef()
 }

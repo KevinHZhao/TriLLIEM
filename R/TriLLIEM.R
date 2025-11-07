@@ -9,6 +9,7 @@
 #'  \item{"`M`"}{Maternal effects.}
 #'  \item{"`Im`"}{Maternal imprinting effects.}
 #'  \item{"`If`"}{Paternal imprinting effects.}
+#'  \item{"`E:Im`"}{Maternal imprinting by environment interactions.}
 #' }
 #' @param includeE A logical value indicating whether to include environment
 #' interaction effects.  If set to "`FALSE`", any exposed counts in `dat` are
@@ -42,7 +43,7 @@
 #'
 #' @examples
 #' res <- TriLLIEM(mtmodel = "HWE", effects = c("C", "M", "Im"), dat = example_dat4R)
-#' res %>% summary() %>% coef()
+#' res |> summary() |> coef()
 TriLLIEM <- function(mtmodel = "MS", effects = c("C", "M"), dat, PStest = FALSE,
                      includeE = FALSE, Einteraction = "M", Estrat = FALSE, Eanova = FALSE,
                      includeD = FALSE, includeIm = FALSE,

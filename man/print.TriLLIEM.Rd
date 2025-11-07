@@ -2,13 +2,22 @@
 % Please edit documentation in R/print.TriLLIEM.R
 \name{print.TriLLIEM}
 \alias{print.TriLLIEM}
-\title{Title}
+\title{Print method for \code{TriLLIEM} objects}
 \usage{
 \method{print}{TriLLIEM}(x, digits = max(3L, getOption("digits") - 3L), ...)
 }
 \arguments{
-\item{...}{}
+\item{x}{an object of class \code{TriLLIEM}.}
+
+\item{digits}{number of digits to display.}
+
+\item{...}{further arguments passed to or from other methods.}
+}
+\value{
+Prints details of the \code{TriLLIEM} model, only including genetically
+relevant parameters in listed coefficients.  To view all fitted parameters,
+run \code{coef(x)}.
 }
 \description{
-Title
+Print method for \code{TriLLIEM} objects
 }

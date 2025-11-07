@@ -2,14 +2,22 @@
 % Please edit documentation in R/vcov.TriLLIEM.R
 \name{vcov.TriLLIEM}
 \alias{vcov.TriLLIEM}
-\title{Title}
+\title{Calculate Variance-Covariance Matrix for a \code{TriLLIEM} Object}
 \usage{
-\method{vcov}{TriLLIEM}(res, proven = FALSE)
+\method{vcov}{TriLLIEM}(res)
 }
 \arguments{
-\item{res}{}
+\item{res}{a \code{TriLLIEM} object.}
+}
+\value{
+A matrix of covariances between parameters, accounting for the EM
+algorithm.
 }
 \description{
-Title
+Calculate Variance-Covariance Matrix for a \code{TriLLIEM} Object
+}
+\examples{
+model <- TriLLIEM(dat = example_dat4R, effects = c("C", "M", "Im"))
+vcov(model)
 }
 \keyword{internal}

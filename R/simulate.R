@@ -24,8 +24,8 @@
 #' group by population, assumed equal to case population proportion.
 #' @param includePopStrat A logical value indicating whether to include
 #' population stratification in the simulation.
-#' @param numPop
-#' @param Fst
+#' @param numPop not currently used.
+#' @param Fst not currently used.
 #' @param prev.byPop Prevalence of cases in each sub population.
 #' @param prop.byPop Proportion of each sub population, must sum to 1.
 #'

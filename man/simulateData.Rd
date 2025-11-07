@@ -66,6 +66,10 @@ group by population, assumed equal to case population proportion.}
 \item{includePopStrat}{A logical value indicating whether to include
 population stratification in the simulation.}
 
+\item{numPop}{not currently used.}
+
+\item{Fst}{not currently used.}
+
 \item{prev.byPop}{Prevalence of cases in each sub population.}
 
 \item{prop.byPop}{Proportion of each sub population, must sum to 1.}

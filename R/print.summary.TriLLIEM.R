@@ -1,16 +1,7 @@
-#' Title
+#' Print method for `summary.TriLLIEM` objects
 #'
-#' @param x
-#' @param digits
-#' @param symbolic.cor
-#' @param signif.stars
-#' @param show.residuals
-#' @param ...
-#'
-#' @returns
+#' See \code{\link[stats]{print.summary.glm}}.
 #' @export
-#'
-#' @examples
 print.summary.TriLLIEM <- function (x,
                                     digits = max(3L, getOption("digits") - 3L),
                                     symbolic.cor = x$symbolic.cor,
@@ -34,7 +25,7 @@ print.summary.TriLLIEM <- function (x,
 
   regex_filter <-
     "^as\\.factor\\(mt\\_MS\\)[1-6](\\:E)?$|^\\(Intercept\\)$|^HWgeno(\\:E)?$|^as\\.factor\\(mt\\_MaS\\)[1-9](\\:E)?$|^E$|^D$|^E\\:D$"
-  positions <- grep(regex_filter, rownames(x$coefficients))
+  positions <- grep(regex_filter, rownames(coef(x)))
 
   if (length(x$aliased[-positions]) == 0L) {
     cat("\nNo Coefficients\n")
@@ -47,7 +38,7 @@ print.summary.TriLLIEM <- function (x,
       cat("\nCoefficients: (", nsingular, " not defined because of singularities)\n",
           sep = "")
     else cat("\nCoefficients:\n")
-    coefs <- x$coefficients[-positions,]
+    coefs <- x$coefficients[-positions, , drop = FALSE]
     if (!is.null(aliased <- x$aliased[-positions]) && any(aliased)) {
       cn <- names(aliased)
       coefs <- matrix(NA, length(aliased), 4L, dimnames = list(cn,

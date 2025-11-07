@@ -1,13 +1,13 @@
-#' Title
+#' Print method for `TriLLIEM` objects
 #'
-#' @param x
-#' @param digits
-#' @param ...
+#' @param x an object of class `TriLLIEM`.
+#' @param digits number of digits to display.
+#' @param ... further arguments passed to or from other methods.
 #'
-#' @returns
+#' @returns Prints details of the `TriLLIEM` model, only including genetically
+#' relevant parameters in listed coefficients.  To view all fitted parameters,
+#' run `coef(x)`.
 #' @export
-#'
-#' @examples
 #'
 print.TriLLIEM <- function (x, digits = max(3L, getOption("digits") - 3L), ...)
 {
@@ -41,3 +41,4 @@ print.TriLLIEM <- function (x, digits = max(3L, getOption("digits") - 3L), ...)
   invisible(x)
 }
 # code copied from getS3method("print", "glm")
+# mention in details code adapted from print.glm

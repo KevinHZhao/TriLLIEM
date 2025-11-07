@@ -1,4 +1,4 @@
-#' Title
+#' Run EMIM on a data set
 #'
 #' @param mtmodel
 #' @param effects

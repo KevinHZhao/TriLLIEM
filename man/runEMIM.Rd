@@ -2,7 +2,7 @@
 % Please edit documentation in R/runEMIM.R
 \name{runEMIM}
 \alias{runEMIM}
-\title{Title}
+\title{Run EMIM on a data set}
 \usage{
 runEMIM(
   mtmodel = "MS",
@@ -20,6 +20,6 @@ runEMIM(
 \item{weinberg}{}
 }
 \description{
-Title
+Run EMIM on a data set
 }
 \keyword{internal}

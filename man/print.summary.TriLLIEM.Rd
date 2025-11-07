@@ -2,7 +2,7 @@
 % Please edit documentation in R/print.summary.TriLLIEM.R
 \name{print.summary.TriLLIEM}
 \alias{print.summary.TriLLIEM}
-\title{Title}
+\title{Print method for \code{summary.TriLLIEM} objects}
 \usage{
 \method{print}{summary.TriLLIEM}(
   x,
@@ -13,9 +13,6 @@
   ...
 )
 }
-\arguments{
-\item{...}{}
-}
 \description{
-Title
+See \code{\link[stats]{print.summary.glm}}.
 }

@@ -37,7 +37,7 @@ summary.TriLLIEM <- function (object)
   ans <- c(
     object[keep],
     list(
-      deviance.resid = residuals(object, type = "deviance"),
+      deviance.resid = TriLLIEM:::residuals.TriLLIEM(object, type = "deviance"),
       coefficients = coef.table,
       aliased = aliased,
       dispersion = 1,

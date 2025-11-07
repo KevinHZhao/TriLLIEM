@@ -1,15 +1,19 @@
 ## Calculates the Fisher info matrix, accounting for EM
 
-#' Title
+#' Calculate Variance-Covariance Matrix for a `TriLLIEM` Object
 #'
-#' @param res
+#' @param res a `TriLLIEM` object.
 #'
-#' @return
+#' @return A matrix of covariances between parameters, accounting for the EM
+#' algorithm.
 #' @export
 #' @keywords internal
 #'
 #' @examples
-vcov.TriLLIEM <- function(res, proven = FALSE) {
+#' model <- TriLLIEM(dat = example_dat4R, effects = c("C", "M", "Im"))
+#' vcov(model)
+vcov.TriLLIEM <- function(res) {
+  proven <- FALSE # need to fix to work with controls and E
   ## Calculating SE's
   ## IX is the 16-row info matrix
   ## IY is the 15-row info matrix

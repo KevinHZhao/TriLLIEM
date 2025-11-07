@@ -1,14 +1,3 @@
-
-#' Accessing residuals for TriLLIEM objects
-#'
-#' @param object
-#' @param type
-#' @param ...
-#'
-#' @returns
-#' @export
-#'
-#' @examples
 residuals.TriLLIEM <- function(object, type = c("deviance", "pearson", "working",
                                                 "response", "partial"), ...)  {
   ## Modifying the code for residuals.glm

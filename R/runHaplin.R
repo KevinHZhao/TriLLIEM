@@ -1,4 +1,4 @@
-#' Title
+#' Run Haplin on a data set
 #'
 #' @param effects
 #' @param dat

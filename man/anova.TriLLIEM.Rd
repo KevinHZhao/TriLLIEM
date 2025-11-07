@@ -2,13 +2,25 @@
 % Please edit documentation in R/anova.TriLLIEM.R
 \name{anova.TriLLIEM}
 \alias{anova.TriLLIEM}
-\title{Analysis of Deviance for TriLLIEM objects}
+\title{ANOVA for TriLLIEM objects}
 \usage{
-\method{anova}{TriLLIEM}(object, ..., dispersion = NULL, test = "LRT")
+\method{anova}{TriLLIEM}(object, ...)
 }
 \arguments{
-\item{test}{}
+\item{object}{An object of class \code{TriLLIEM}.}
+
+\item{...}{Additional \code{TriLLIEM} objects for comparison to \code{object}}
+}
+\value{
+An ANOVA table where likelihood ratio tests are performed on each
+genetically relevant parameter, ignoring mating type parameters and certain
+demographic parameters.
 }
 \description{
-Analysis of Deviance for TriLLIEM objects
+ANOVA for TriLLIEM objects
+}
+\examples{
+model1 <- TriLLIEM(dat = example_dat4R, effects = c("C"))
+model2 <- TriLLIEM(dat = example_dat4R, effects = c("C", "M"))
+anova(model1, model2)
 }
