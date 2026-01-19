@@ -2,20 +2,16 @@
 % Please edit documentation in R/TriLLIEM.R
 \name{TriLLIEM}
 \alias{TriLLIEM}
-\title{Running a loglinear analysis of trio data.}
+\title{Fit the log-linear model to trio data.}
 \usage{
 TriLLIEM(
   mtmodel = "MS",
   effects = c("C", "M"),
   dat,
-  PStest = FALSE,
   includeE = FALSE,
-  Einteraction = "M",
   Estrat = FALSE,
   Eanova = FALSE,
   includeD = FALSE,
-  includeIm = FALSE,
-  includeIf = FALSE,
   Minit = 0.5,
   max.iter = 30,
   EM.diag = FALSE
@@ -23,63 +19,171 @@ TriLLIEM(
 }
 \arguments{
 \item{mtmodel}{Mating type model to use in the analysis, can be "\code{HWE}" for
-Hardy-Weinberg Equilibrium, "\code{MS}" for Mating Symmetry, and "\code{MaS}" for Mating Asymmetry.}
+Hardy-Weinberg Equilibrium, "\code{MS}" for Mating Symmetry (default), and "\code{MaS}"
+for Mating Asymmetry.}
 
 \item{effects}{A vector listing the effects, as strings, to include
-in the model.  Example effects include:
+in the model. Effects can include:
 \describe{
 \item{"\code{C}"}{Child effects.}
 \item{"\code{M}"}{Maternal effects.}
 \item{"\code{Im}"}{Maternal imprinting effects.}
 \item{"\code{If}"}{Paternal imprinting effects.}
+\item{"\code{E:C}"}{Child gene environment interactions.}
+\item{"\code{E:M}"}{Maternal gene environment interactions.}
 \item{"\code{E:Im}"}{Maternal imprinting by environment interactions.}
-}}
+\item{"\code{E:If}"}{Paternal imprinting by environment interactions.}
+}
+Default is \code{c("C", "M")}.}
 
 \item{dat}{A data frame with triad data, with the formatting of
 \link{example_dat4R}.}
 
-\item{PStest}{A logical value indicating whether to perform a population
-stratification test on the data.}
-
 \item{includeE}{A logical value indicating whether to include environment
-interaction effects.  If set to "\code{FALSE}", any exposed counts in \code{dat} are
-combined with the respective unexposed count.}
-
-\item{Einteraction}{A string indicating what variable environmental effects
-interact with.  Can be "\code{Im}", "\code{If}", "\code{C}", or "\code{M}".}
+interaction effects. If set to "\code{FALSE}", any exposed counts in \code{dat} are
+combined with the respective unexposed count (treating \code{dat} as if all
+\code{E = 0}).  Default is \code{FALSE}.}
 
 \item{Estrat}{A logical value indicating whether to use a stratified approach
-for environmental interactions equivalent to that of EMIM and/or Haplin.}
+for environmental interactions. Default is \code{FALSE}. See details for more
+information.}
 
 \item{Eanova}{A logical value indicating if this is for the sake of running
-anova on a data set with a non-zero "\code{E}" column but without "\code{E}" effects.  Should
-be left as "\code{FALSE}" otherwise, as the degrees of freedom will be incorrect.}
+anova to compare a model with environmental interactions to a model that does
+not include environmental interactions.  Should be left as "\code{FALSE}" if not
+for this purpose, as the degrees of freedom will be incorrect.  See details
+for more information. Default is \code{FALSE}.}
 
 \item{includeD}{A logical value indicating whether to use the hybrid
 model with controls.  If set to "\code{FALSE}", any control trios will be removed
-from the data set prior to analysis.}
+from the data set prior to analysis. Default is \code{FALSE}.}
 
-\item{includeIm}{A logical value indicating whether to include maternal
-imprinting in the model, equivalent to adding "\code{Im}" in the "\code{effects}" vector.}
+\item{Minit}{Initial value for the proportion of triple heterozygote (\code{M=1},
+\code{F=1}, \code{C=1}) category where the '1' allele is passed from the mother to child.
+This is used to initialize the EM algorithm. Default is 0.5.}
 
-\item{includeIf}{A logical value indicating whether to include paternal
-imprinting in the model, equivalent to adding "\code{If}" in the "\code{effects}" vector.}
-
-\item{Minit}{Initial proportion of maternal inheritence to split the triple
-heterozygote cell by if the EM algorithm is necessary.}
-
-\item{max.iter}{Maximum number of iterations for the EM algorithm.}
+\item{max.iter}{Maximum number of iterations for the EM algorithm.  Default
+is 30.}
 
 \item{EM.diag}{A logical value indicating whether to show diagnostic messages
-for the EM algorithm.}
+for the EM algorithm.  Default is \code{FALSE}.}
 }
 \value{
-An object of class "\code{TriLLIEM}", which inherits from class "\code{glm}".
+An object of class "\code{TriLLIEM}", which inherits from class "\code{glm}"
+and has the same components as the output of \link{glm}, with the following
+modifications:
+\describe{
+\item{\code{df.residual}}{if imprinting effects are specified, subtracted by the
+number of additional rows introduced by the EM algorithm.}
+\item{\code{df.null}}{if imprinting effects are specified, subtracted by the
+number of additional rows introduced by the EM algorithm.}
+\item{\code{EM_iter}}{number of EM algorithm iterations before convergence.}
+\item{\code{y_initial}}{initial supplied data frame, \code{dat}, before addition of rows
+by EM.}
+\item{\code{grp}}{list of vectors, with each vector containing indices of grouped
+rows in the data after the EM algorithm is applied (\code{y}). Aggregating these grouped
+rows by sum will yield \code{y_initial}.}
+}
 }
 \description{
-Running a loglinear analysis of trio data.
+This function is used to fit the user-specified log-linear model to trio
+count data.
+}
+\details{
+Fits the specified log-linear model of \insertCite{Wein+98;textual}{TriLLIEM} to
+\code{dat} using R's \link{glm} framework.  This includes \insertCite{WeinUmba05;textual}{TriLLIEM}'s
+hybrid model allowing for control triads.  When imprinting effects ("\code{Im}" or
+"\code{If}") are included, an EM algorithm is run to estimate the counts of
+\eqn{(M, F, C) = (1, 1, 1)} triads which are maternally and paternally
+inherited.  Normally, if this was done using the \link{glm} function, the computed
+likelihoods would use these estimated counts, which is incorrect. This function,
+alongside its methods like \link{summary.TriLLIEM} and \link{anova.TriLLIEM},
+performs the EM algorithm while using the original observed counts to correctly
+obtain likelihoods.
+
+The model formula supplied to \link{glm} is made up of the genetic effects supplied
+in \code{effects}, alongside several nuisance parameters.  These include:
+\itemize{
+\item Mating type parameters, dependent on the specified \code{mtmodel},
+\item \code{D}, if \code{includeD = TRUE},
+\item \code{E:D}, if \code{includeD = TRUE} and \code{includeE = TRUE},
+\item Mating type parameter by \code{E} interactions, if \code{includeE = TRUE}; \code{E}, if
+\code{includeE = TRUE} and \code{mtmodel = "HWE"} (both necessary as shown in
+\insertCite{Shin+10;textual}{TriLLIEM}).
+These nuisance parameters are omitted when printing the function output,
+but may be viewed by using the \link{coef} function on the output.
+}
+
+\code{Estrat = TRUE} forces every every listed effect in \code{effects} to have its
+gene environment interaction included in the model, regardless of whether the
+user has specified them explicitly or not. This essentially stratifies the
+model by \code{E}, and is useful for replicating the stratified models necessary
+for analyzing gene environment interactions in \code{Haplin}
+\insertCite{GjesLie06}{TriLLIEM} and \code{EMIM} \insertCite{HoweCord12}{TriLLIEM}.
+
+\code{Eanova = TRUE} allows the model to be fit when \eqn{E \neq 0} rows are
+present but \code{includeE = FALSE}, without modifying these exposed rows.
+This is only useful for using \code{anova.TriLLIEM}
+to determine if models with gene-environment interactions are statistically
+different from models without gene-environment interactions.  Since this option
+keeps these \eqn{E \neq 0} categories without using the \code{E} parameter though,
+the fitted model will use incorrect degrees of freedom in its significance
+tests, and hence should not be used for any inferences besides this very
+specific case of model comparison.
+
+All \code{TriLLIEM} objects are of family \code{poisson_em}, a modified version of the
+poisson family to account for additional data created by the EM algorithm when
+computing residuals and AIC.
 }
 \examples{
-res <- TriLLIEM(mtmodel = "HWE", effects = c("C", "M", "Im"), dat = example_dat4R)
-res |> summary() |> coef()
+res1 <- TriLLIEM(mtmodel = "HWE", effects = c("C", "M", "Im"), dat = example_dat4R)
+summary(res1)
+
+dat <-
+  simulateData(
+    nControl = 1000,
+    propE = c(0.1, 0.4),
+    propE.control = c(0.2, 0.2),
+    nPop = 2,
+    maf = c(0.3, 0.4),
+    prev.byPop = c(0.2, 0.3),
+    prop.byPop = c(0.6, 0.4)
+  )
+## Obtain the non-stratified and stratified models and compare them via anova
+res2 <-
+  TriLLIEM(
+    mtmodel = "HWE",
+    effects = c("C", "M", "Im", "E:Im"),
+    dat = dat,
+    includeE = TRUE,
+    includeD = TRUE
+  )
+res3 <-
+  TriLLIEM(
+    mtmodel = "HWE",
+    effects = c("C", "M", "Im", "E:Im"),
+    dat = dat,
+    includeE = TRUE,
+    Estrat = TRUE,
+    includeD = TRUE
+  )
+anova(res2, res3)
+
+## Compare non-stratified model to a model without E by setting Eanova = TRUE
+res4 <-
+  TriLLIEM(
+    mtmodel = "HWE",
+    effects = c("C", "M", "Im"),
+    dat = dat,
+    Eanova = TRUE,
+    includeD = TRUE
+  )
+
+anova(res2, res4)
+
+}
+\references{
+{
+\insertAllCited{}
+}
 }

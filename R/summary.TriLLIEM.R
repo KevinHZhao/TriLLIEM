@@ -1,17 +1,29 @@
 #' Summary function for TriLLIEM functions
 #'
-#' @param res Resulting object of class "`glm` from the [TriLLIEM()] function.
+#' @param object an object of class "`TriLLIEM`, usually, a result of a call to
+#' [TriLLIEM].(FORMATTING HERE
+#' WAS WORD FOR WORD TAKEN DIRECTLY FROM THE DOCUMENTATION OF ?summary.glm
+#' , MAKING NOTE OF THIS IN CASE THIS NEEDS TO BE CITED SOMEHOW)
 #'
-#' @return A list with the following components:
+#' @details
+#' Due to [TriLLIEM] using the EM algorithm when fitting imprinting effects,
+#' calculation of residuals is modified compared to in [summary.glm], where
+#' the original data (`object$y_initial`) is used instead of `object$y` to
+#' ensure the correct residuals are computed.  See [TriLLIEM] for more details.
+#'
+#' @return A list with the same components as those returned by [summary.glm],
+#' but with the addition of the following:
 #' \describe{
-#'  \item{effects}{The maximum likelihood estimates of the coefficients in the model.}
-#'  \item{se}{The standard errors of the maximum likelihood estimates, based on the observed information matrix.}
-#'  \item{pvals}{The p-values for each of the maximum likelihood estimates.}}
+#'  \item{terms}{the component from `object`.}
+#'  \item{aic}{the component from `object`.}
+#'  \item{EM_iter}{the component from `object`}
+#' }
+#'
 #' @export
 #'
 #' @examples
-#' res <- TriLLIEM(dat = example_dat4R)
-#' summ_trill(res)
+#' res <- TriLLIEM(mtmodel = "HWE", effects = c("C", "M", "Im"), dat = example_dat4R)
+#' summary(res)
 summary.TriLLIEM <- function (object)
 {
   df.r <- object$df.residual

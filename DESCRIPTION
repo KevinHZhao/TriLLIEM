@@ -3,30 +3,30 @@ Type: Package
 Title: Log-Linear Modelling of Triad Genotype Data
 Version: 0.1.0
 Authors@R: c(
-    person("Kevin Heda", "Zhao", email = "kzhao097@uottawa.ca", role = c("aut", "cre")),
+    person("Kevin Heda", "Zhao", email = "trilliemmaintainer@gmail.com", role = c("aut", "cre")),
     person("Kelly", "Burkett", email = "kburkett@uottawa.ca", role = "aut"))
-Description: An implementation of the Poisson log-linear model
-    for estimating disease risk based on child, maternal, and
-    parent-of-origin effects, as well as gene-environment
-    interactions.
+Description: Triad Log-Linear modelling of Imprinting
+    Environmental interactions, and Maternal effects (TriLLIEM).
+    This is an implementation of the log-linear model described in a series of
+    papers, see for example <doi.org/10.1002/gepi.20547>.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Imports: 
     dplyr,
-    Haplin,
-    magrittr
+    magrittr,
+    Rdpack
 Suggests: 
     knitr,
     rmarkdown,
     testthat (>= 3.0.0),
-    tidyverse,
-    trio
+    tidyverse
 RoxygenNote: 7.3.1
 Depends: 
-    R (>= 2.10)
+    R (>= 4.1.0)
 Roxygen: list(markdown = TRUE)
 VignetteBuilder: knitr
 Config/testthat/edition: 3
 URL: https://github.com/KevinHZhao/TriLLIEM
 BugReports: https://github.com/KevinHZhao/TriLLIEM/issues
+RdMacros: Rdpack

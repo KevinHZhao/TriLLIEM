@@ -37,12 +37,11 @@ For example, we can simulate $1,000$ case-triads from a population under HWE wit
 set.seed(123) # setting random seed for reproducibility
 matdat <- 
   simulateData(
-    ntrios = 1000,
+    nCases = 1000,
     maf = 0.3,
     mtCoef = c(1,1,1),
     S = c(1, 1.2, 1.2^2)
-  )$dat4R # extract data formatted for TriLLIEM
-## simulateData also returns data formatted for EMIM and Haplin
+  )
 ```
 
 More complex simulations can also be run.
@@ -61,18 +60,16 @@ We can obtain the appropriate simulated data by running:
 ```{r complexsim}
 impdat <-
   simulateData(
-    ntrios = 2000,
+    nCases = 2000,
+    nControl = 1000,
     maf = 0.3,
     S = c(1, 1.2, 1.2^2),
     V = c(1, 1.5, 1.5^2),
     mtCoef = c(0.5, 0.5, 0.5),
     Im = 1.4,
-    includeE = TRUE,
-    Einteraction = "Im",
     propE = 0.3,
-    includeControl = TRUE,
-    nControl = 1000
-  )$dat4R
+    Einteraction = "Im"
+  )
 ```
 
 ## Analyzing triad data
@@ -105,10 +102,9 @@ Likewise, for the \texttt{impdat} data, we would use an MaS mating type model, w
 impres <-
   TriLLIEM(
     mtmodel = "MaS",
-    effects = c("M", "Im"),
+    effects = c("M", "Im", "E:Im"),
     dat = impdat,
     includeE = TRUE,
-    Einteraction = "Im",
     includeD = TRUE
   )
 impres %>% summary() %>% coef()
@@ -120,10 +116,9 @@ For results equivalent to the stratified approach that are equivalent to \textbf
 impres_strat <-
   TriLLIEM(
     mtmodel = "MaS",
-    effects = c("M", "Im"),
+    effects = c("M", "Im", "E:Im"),
     dat = impdat,
     includeE = TRUE,
-    Einteraction = "Im",
     Estrat = TRUE,
     includeD = TRUE
   )
@@ -142,5 +137,5 @@ model_2 <- TriLLIEM(dat = example_dat4R, effects = c("C", "M", "Im"))
 ```
 Then to compare the two models using the likelihood ratio test, we simply run:
 ```{r model_anova}
-anova(model_1, model_2, test = "LRT")
+anova(model_1, model_2)
 ```

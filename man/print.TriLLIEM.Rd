@@ -7,17 +7,25 @@
 \method{print}{TriLLIEM}(x, digits = max(3L, getOption("digits") - 3L), ...)
 }
 \arguments{
-\item{x}{an object of class \code{TriLLIEM}.}
+\item{x}{an object of class \code{TriLLIEM}, usually, a result of a call to
+\link{TriLLIEM}.}
 
-\item{digits}{number of digits to display.}
+\item{digits}{the number of significant digits to use when printing.}
 
-\item{...}{further arguments passed to or from other methods.}
+\item{...}{further arguments passed to or from other methods. (FORMATTING HERE
+WAS WORD FOR WORD TAKEN DIRECTLY FROM THE DOCUMENTATION OF ?print.glm
+, MAKING NOTE OF THIS IN CASE THIS NEEDS TO BE CITED SOMEHOW)}
 }
 \value{
-Prints details of the \code{TriLLIEM} model, only including genetically
-relevant parameters in listed coefficients.  To view all fitted parameters,
+Prints details of the \code{TriLLIEM} model, with nuisance parameters
+(e.g., mating type parameters) omitted.  To view all fitted parameters,
 run \code{coef(x)}.
 }
 \description{
 Print method for \code{TriLLIEM} objects
+}
+\examples{
+res <- TriLLIEM(mtmodel = "HWE", effects = c("C", "M", "Im"), dat = example_dat4R)
+print(res)
+
 }

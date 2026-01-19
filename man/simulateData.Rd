@@ -5,82 +5,189 @@
 \title{Simulate data for TriLLIEM}
 \usage{
 simulateData(
-  ntrios = 1000,
-  maf = 0.3,
+  nCases = 1000,
+  nControl = 0,
   R = c(1, 1, 1),
   S = c(1, 1, 1),
   V = c(1, 1, 1),
   mtCoef = c(1, 1, 1),
   Im = 1,
   If = 1,
-  includeE = FALSE,
-  Einteraction = "M",
   propE = 0,
-  includeControl = FALSE,
-  nControl = 0,
   propE.control = propE,
-  includePopStrat = FALSE,
-  numPop = 1,
-  Fst = 0.005,
+  Einteraction = "M",
+  nPop = 1,
+  maf = 0.3,
   prev.byPop = NULL,
-  prop.byPop = NULL
+  prop.byPop = NULL,
+  Fst = 0.005
 )
 }
 \arguments{
-\item{ntrios}{Number of trios to simulate.}
+\item{nCases}{number of case trios to simulate}
 
-\item{maf}{Minor allele frequency in the population, a proportion between 0 and 1.}
+\item{nControl}{number of control trios}
 
-\item{R}{Vector of 3 elements representing child effects for 0, 1, and 2
-copies of the risk allele, respectively.}
+\item{R}{vector of 3 elements representing child effects for 0, 1, and 2
+copies of the risk allele, respectively}
 
-\item{S}{Vector of 3 elements representing maternal effects for 0, 1, and 2
-copies of the risk allele, respectively.}
+\item{S}{vector of 3 elements representing maternal effects for 0, 1, and 2
+copies of the risk allele, respectively}
 
-\item{V}{Vector of 3 elements representing gene-environment effects
-for 0, 1, and 2 copies of the risk allele, respectively.}
+\item{V}{vector of 3 elements representing gene-environment effects
+for 0, 1, and 2 copies of the risk allele, respectively}
 
-\item{mtCoef}{Mating type coefficients.}
+\item{mtCoef}{vector of 3 elements representing the mating type coefficients,
+see details for more information}
 
-\item{Im}{Maternal imprinting effect.}
+\item{Im}{maternal imprinting effect}
 
-\item{If}{Paternal imprinting effect.}
+\item{If}{paternal imprinting effect}
 
-\item{includeE}{A logical value indicating whether environmental effects
-should be included in the simulation.}
+\item{propE}{scalar or vector of proportion of case trios in the
+environmental exposure group in a single or multiple populations (when
+\code{nPop > 1})}
 
-\item{Einteraction}{A string indicating what variable environmental effects
-interact with.  Can be "\code{Im}", "\code{If}", "\code{C}", or "\code{M}".}
+\item{propE.control}{scalar or vector of proportion of control trios in the
+environmental exposure group in a single or multiple populations (when
+\code{nPop > 1})}
 
-\item{propE}{Proportion of case trios in the environmental exposure group by
-population, assumed equal to case population proportion.}
+\item{Einteraction}{string indicating what variable environmental effects
+interact with (one of "\code{Im}", "\code{If}", "\code{C}", or "\code{M}")}
 
-\item{includeControl}{A logical value indicating whether controls should
-be included in the simulations.}
+\item{nPop}{number of populations to simulate for population
+stratification, see details for information on
+specifying other parameters when there are multiple strata}
 
-\item{nControl}{Number of control trios, must be less than ntrios.}
+\item{maf}{scalar or vector of the minor allele frequency proportion
+in a single or multiple populations (when \code{nPop > 1})}
 
-\item{propE.control}{Proportion of control trios in the environmental exposure
-group by population, assumed equal to case population proportion.}
+\item{prev.byPop}{prevalence of cases in each sub population (vector with
+length equal to \code{nPop}, ignored if \code{nPop = 1})}
 
-\item{includePopStrat}{A logical value indicating whether to include
-population stratification in the simulation.}
+\item{prop.byPop}{proportion of each sub population, must sum to 1 (vector
+with length equal to \code{nPop}, ignored if \code{nPop = 1})}
 
-\item{numPop}{not currently used.}
-
-\item{Fst}{not currently used.}
-
-\item{prev.byPop}{Prevalence of cases in each sub population.}
-
-\item{prop.byPop}{Proportion of each sub population, must sum to 1.}
+\item{Fst}{F parameter for estimation of \code{maf} when sub-population level
+\code{maf}'s are unknown (ignored when \code{nPop = 1} or when \code{maf} has the same
+length as \code{nPop}), see details for more information}
 }
 \value{
-A data frame of the same format as \link{example_dat4R}
+An object of class \code{TriLLIEM.sim}, a data frame with columns for:
+\describe{
+\item{"\code{type}"}{Index for the category corresponding to maternal ("\code{M}"),
+paternal ("\code{F}"), and child ("\code{C}") genotypes.}
+\item{"\code{mt_MS}"}{Mating type category for maternal and paternal
+genotypes under a mating symmetry model.}
+\item{"\code{mt_MaS}"}{Mating type category for maternal and paternal
+genotypes under a model that does not assume mating symmetry.}
+\item{"\code{M}"}{Maternal genotype.}
+\item{"\code{F}"}{Paternal genotype.}
+\item{"\code{C}"}{Child genotype.}
+\item{"\code{E}"}{Binary variable for if environmental effects are present (1) or
+not present (0).}
+\item{"\code{D}"}{Case child (1)/Control child (0).}
+\item{"\code{count}"}{Number of triads falling under the specified category based
+on "\code{M}", "\code{F}", "\code{C}", "\code{E}", "\code{D}".}
+}
 }
 \description{
-Simulate data for TriLLIEM
+Function to simulate maternal, paternal, and child genotype counts under
+different genetic effect models.
+}
+\details{
+To simulate the counts, first the total number of case trios
+(\code{nCases}) and control trios (\code{nControl}) are partitioned into the \code{nPop}
+sub-populations by randomly sampling from respective multinomial
+distributions, with probabilities calculated using \code{prop.byPop} and
+\code{prev.byPop} as follows:
+\deqn{\Pr(X = i, E = 1 \mid D = 1) = \frac{\alpha_i \varepsilon_{i, 1} \omega_i}{\alpha_1 \omega_1 + \alpha_2 \omega_2},}
+\deqn{\Pr(X = i, E = 0 \mid D = 1) = \frac{\alpha_i (1 - \varepsilon_{i, 1}) \omega_i}{\alpha_1 \omega_1 + \alpha_2 \omega_2},}
+\deqn{\Pr(X = i, E = 1 \mid D = 0) = \frac{(1 - \alpha_i) \varepsilon_{i, 0} \omega_i}{(1 - \alpha_1) \omega_1 + (1 - \alpha_2) \omega_2},}
+\deqn{\Pr(X = i, E = 0 \mid D = 0) = \frac{(1 - \alpha_i) (1 - \varepsilon_{i, 0}) \omega_i}{(1 - \alpha_1) \omega_1 + (1 - \alpha_2) \omega_2},}
+where \eqn{X = i} is the \eqn{i}-th sub-population, \eqn{\alpha_i} is the
+\eqn{i}-th element of \code{prev.byPop}, \eqn{\varepsilon_{i,j}} \eqn{i}-th element
+of \code{propE} (when \eqn{j=1}) or \code{propE.control} (when \eqn{j=0}), and
+\eqn{\omega_i} is the \eqn{i}-th element of \code{prop.byPop.}
+
+If only a single aggregated \code{maf} value is provided when there are multiple
+sub-populations, \code{maf} may be estimated using the model from
+\insertCite{BaldNich95;textual}{TriLLIEM}.  This requires an \eqn{F_{ST}} parameter to be provided,
+with estimates of \code{maf} being obtained by sampling from a beta distribution
+with shape parameters
+\deqn{\alpha = \text{MAF} \times \left(\frac{1}{F_{ST}} - 1\right),}
+\deqn{\beta = (1 - \text{MAF}) \times \left(\frac{1}{F_{ST}} - 1\right),}
+where MAF is the provided \code{maf}.
+
+If \code{nPop = 1}, this step is skipped as everyone will be in the
+same sub-population.  Note that this method of simulating population
+stratification assumes \eqn{D} and \eqn{E} are conditionally independent
+(i.e., \code{V = c(1,1,1)}).
+
+Distributions of counts in each partition based on the different genotype,
+exposure, and disease status categories are then independently sampled
+based on the risk of disease (from the given \code{R}, \code{S}, \code{V}, \code{Im}, and \code{If}
+values) and mating type probabilities (from \code{mtCoef}).
+
+\code{R}, \code{S}, and \code{V} are vectors of 3 elements, where the first element should
+be 1, acting as a baseline for when \eqn{M}, \eqn{C}, or \eqn{M\times E} are
+0 respectively.  The following two numbers represent the multiplicative
+increase to risk when the respective genotype is 1 or 2.  \code{Im} and \code{If} are
+the imprinting parameters, representing the multiplicative increase to risk
+when the minor allele is maternally or paternally inherited.
+
+Mating type probabilities are simulated using the mating asymmetry
+parameterization of \insertCite{Bour+11;textual}{TriLLIEM}.
+Here, \code{mtCoef} is a vector of 3 elements representing \eqn{(C_1, C_2, C_4)}.
+We begin by assigning each
+\eqn{\Pr(M, F)} assuming the population is in Hardy-Weinberg equilibrium,
+with probabilities obtained from the given \code{maf}.  Letting
+\deqn{\mu_1 = \Pr(M = 2, F = 1) = \Pr(M = 1, F = 2),}
+\deqn{\mu_2 = \Pr(M = 2, F = 0) = \Pr(M = 0, F = 2),}
+\deqn{\mu_4 = \Pr(M = 1, F = 0) = \Pr(M = 0, F = 1),}
+we reassign these particular mating pairs by setting
+\deqn{\Pr(M = 2, F = 1) = \mu_1C_1,}
+\deqn{\Pr(M = 1, F = 2) = \mu_1\left(2 - C_1\right),}
+\deqn{\Pr(M = 2, F = 0) = \mu_2C_2,}
+\deqn{\Pr(M = 0, F = 2) = \mu_2\left(2 - C_2\right),}
+\deqn{\Pr(M = 1, F = 0) = \mu_4C_4,}
+\deqn{\Pr(M = 0, F = 1) = \mu_4\left(2 - C_4\right).}
+
+To view the data frame with underlying simulation probabilities, counts for
+either parent of origin case when mother, father, and child are all,
+heterozygous, and by sub-population when simulating population
+stratification, use \code{\link[=fullview]{fullview()}}.
 }
 \examples{
-## Simulating data with multiplicative maternal effect of 2, and paternal imprinting of 3.
+## Maternal effect of 2, and paternal imprinting of 3.
 simulateData(S = c(1, 2, 4), If = 3)
+
+## Paternal imprinting by environment interaction of 1.5.
+simulateData(V = c(1, 1.5, 1.5^2), propE = 0.3, Einteraction = "If")
+
+## Maternal gene environment interaction of 1.6 with controls
+simulateData(nControl = 1000, V = c(1, 1.6, 1.6^2), propE = 0.3, Einteraction = "M")
+
+## Null model with 3 different sub-populations
+simulateData(nPop = 3, maf = c(0.1, 0.2, 0.3), prev.byPop = c(0.2, 0.1, 0.4), prop.byPop = c(0.3, 0.3, 0.4))
+
+## Null model with 2 different sub-populations, environmental exposures, and controls
+simulateData(
+  nControl = 1000,
+  propE = c(0.1, 0.4),
+  propE.control = c(0.2, 0.2),
+  nPop = 2,
+  maf = c(0.3, 0.4),
+  prev.byPop = c(0.2, 0.3),
+  prop.byPop = c(0.6, 0.4)
+ )
+
+}
+\references{
+{
+\insertAllCited{}
+}
+}
+\seealso{
+\link{example_dat4R}, \code{\link[=fullview]{fullview()}}
 }

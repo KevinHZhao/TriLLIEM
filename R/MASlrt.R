@@ -5,7 +5,7 @@
 #' @param dat A dataframe formatted with the same columns as [example_dat4R]
 #'
 #' @return A p-value for the Likelihood Ratio Test.
-#' @export
+#' @noRd
 #'
 #' @examples
 #' MaSlrt(example_dat4R)

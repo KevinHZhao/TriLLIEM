@@ -1,27 +1,35 @@
 #' Print method for `summary.TriLLIEM` objects
 #'
-#' See \code{\link[stats]{print.summary.glm}}.
+#' @param x an object of class "`summary.TriLLIEM`", usually, a result of a call
+#' to [summary.TriLLIEM].
+#' @param digits the number of significant digits to use when
+#' printing.
+#' @param signif.stars logical. If `TRUE`, 'significance stars' are printed for
+#' each coefficient. (FORMATTING HERE
+#' WAS WORD FOR WORD TAKEN DIRECTLY FROM THE DOCUMENTATION OF ?print.summary.glm
+#' , MAKING NOTE OF THIS IN CASE THIS NEEDS TO BE CITED SOMEHOW)
+#'
+#' @returns Prints summary of the `TriLLIEM` model, displaying the original call
+#' to the function, the matrix of coefficients, the AIC, and the number of Fisher
+#' Scoring and EM iterations.
+#'
+#' @seealso [print.summary.glm()]
+#'
+#' @examples
+#' res <- TriLLIEM(mtmodel = "HWE", effects = c("C", "M", "Im"), dat = example_dat4R)
+#' print(summary(res))
+#'
 #' @export
 print.summary.TriLLIEM <- function (x,
                                     digits = max(3L, getOption("digits") - 3L),
-                                    symbolic.cor = x$symbolic.cor,
                                     signif.stars = getOption("show.signif.stars"),
-                                    show.residuals = FALSE,
                                     ...
 )
 {
+  ## TRY TO ABSORB EVERYTHING INTO THE ..., remove show.residuals, remove symbolic cor
+
   cat("\nCall:\n", paste(deparse(x$call), sep = "\n", collapse = "\n"),
       "\n", sep = "")
-  if (show.residuals) {
-    cat("\nDeviance Residuals: \n")
-    if (x$df.residual > 5) {
-      x$deviance.resid <- setNames(quantile(x$deviance.resid,
-                                            na.rm = TRUE), c("Min", "1Q", "Median", "3Q",
-                                                             "Max"))
-    }
-    xx <- zapsmall(x$deviance.resid, digits + 1L)
-    print.default(xx, digits = digits, na.print = "", print.gap = 2L)
-  }
 
   regex_filter <-
     "^as\\.factor\\(mt\\_MS\\)[1-6](\\:E)?$|^\\(Intercept\\)$|^HWgeno(\\:E)?$|^as\\.factor\\(mt\\_MaS\\)[1-9](\\:E)?$|^E$|^D$|^E\\:D$"
@@ -57,21 +65,6 @@ print.summary.TriLLIEM <- function (x,
   if (x$EM_iter > 0L)
     cat("Number of EM iterations: ", x$EM_iter, "\n", sep = "")
   correl <- x$correlation
-  if (!is.null(correl)) {
-    p <- NCOL(correl)
-    if (p > 1) {
-      cat("\nCorrelation of Coefficients:\n")
-      if (is.logical(symbolic.cor) && symbolic.cor) {
-        print(symnum(correl, abbr.colnames = NULL))
-      }
-      else {
-        correl <- format(round(correl, 2L), nsmall = 2L,
-                         digits = digits)
-        correl[!lower.tri(correl)] <- ""
-        print(correl[-1, -p, drop = FALSE], quote = FALSE)
-      }
-    }
-  }
   cat("\n")
   invisible(x)
 }

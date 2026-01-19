@@ -2,7 +2,7 @@
 
 example_dat4R <- withr::with_seed(
   seed = 1,
-  simulateData()$dat4R
+  simulateData()
 )
 
 usethis::use_data(example_dat4R, overwrite = TRUE)

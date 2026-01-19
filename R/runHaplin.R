@@ -1,16 +1,3 @@
-#' Run Haplin on a data set
-#'
-#' @param effects
-#' @param dat
-#' @param includeD
-#' @param PoO
-#' @param verbose
-#'
-#' @return
-#' @export
-#' @keywords internal
-#'
-#' @examples
 runHaplin <- function(effects = c("C", "M"), dat, includeD = FALSE,
                       includeE = FALSE, PoO = FALSE, verbose = FALSE) {
   ## Test with pooxe

@@ -7,12 +7,35 @@
 \method{print}{summary.TriLLIEM}(
   x,
   digits = max(3L, getOption("digits") - 3L),
-  symbolic.cor = x$symbolic.cor,
   signif.stars = getOption("show.signif.stars"),
-  show.residuals = FALSE,
   ...
 )
 }
+\arguments{
+\item{x}{an object of class "\code{summary.TriLLIEM}", usually, a result of a call
+to \link{summary.TriLLIEM}.}
+
+\item{digits}{the number of significant digits to use when
+printing.}
+
+\item{signif.stars}{logical. If \code{TRUE}, 'significance stars' are printed for
+each coefficient. (FORMATTING HERE
+WAS WORD FOR WORD TAKEN DIRECTLY FROM THE DOCUMENTATION OF ?print.summary.glm
+, MAKING NOTE OF THIS IN CASE THIS NEEDS TO BE CITED SOMEHOW)}
+}
+\value{
+Prints summary of the \code{TriLLIEM} model, displaying the original call
+to the function, the matrix of coefficients, the AIC, and the number of Fisher
+Scoring and EM iterations.
+}
 \description{
-See \code{\link[stats]{print.summary.glm}}.
+Print method for \code{summary.TriLLIEM} objects
+}
+\examples{
+res <- TriLLIEM(mtmodel = "HWE", effects = c("C", "M", "Im"), dat = example_dat4R)
+print(summary(res))
+
+}
+\seealso{
+\code{\link[=print.summary.glm]{print.summary.glm()}}
 }

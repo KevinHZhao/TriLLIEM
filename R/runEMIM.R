@@ -1,18 +1,3 @@
-#' Run EMIM on a data set
-#'
-#' @param mtmodel
-#' @param effects
-#' @param peddat
-#' @param emimpath
-#' @param includeIm
-#' @param includeIf
-#' @param weinberg
-#'
-#' @return
-#' @export
-#' @keywords internal
-#'
-#' @examples
 runEMIM <- function(mtmodel = "MS", effects = c("C", "M"), peddat,
                     emimpath = "~/EMIM/", Einteraction = "M",
                     includeIm = FALSE, includeIf = FALSE, weinberg = FALSE,

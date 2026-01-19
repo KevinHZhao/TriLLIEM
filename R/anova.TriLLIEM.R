@@ -1,12 +1,28 @@
 
-#' ANOVA for TriLLIEM objects
+#' ANOVA method for TriLLIEM objects
+#'
+#' This method is modelled after the `anova.glm` method.  It produces an
+#' analysis of deviance table for multiple nested models.
 #'
 #' @param object An object of class `TriLLIEM`.
 #' @param ... Additional `TriLLIEM` objects for comparison to `object`
 #'
-#' @returns An ANOVA table where likelihood ratio tests are performed on each
-#' genetically relevant parameter, ignoring mating type parameters and certain
-#' demographic parameters.
+#' @details
+#' Like `anova.glm`, each model's residual degrees of freedom and deviances are
+#' given, alongside their respective differences between the models.
+#' Models should be nested for these
+#' results to be statistically interpretable. The last column shows the p-value
+#' from chi-squared tests comparing the difference in deviance for each model.
+#'
+#' `TriLLIEM` objects modelling any sort of imprinting effect must use this
+#' function, as the EM algorithm used in `TriLLIEM` causes the `anova.glm()`
+#' function to treat the estimated values as having been truly observed,
+#' modifying the degrees of freedom.
+#'
+#' @returns An object of class "`anova.TriLLIEM`" inheriting from class
+#' "`anova`".
+#'
+#' @seealso [anova.glm()]
 #' @export
 #'
 #' @examples
@@ -17,6 +33,8 @@ anova.TriLLIEM <- function (object, ...) {
   ## All anova tests should use these parameters...
   dispersion <- NULL
   test <- "LRT"
+
+  #stop()## Make it only work when multiple objects specified
 
   res <- stats:::anova.glm(object, ..., dispersion = dispersion, test = test)
   ## ANOVA will not call TriLLIEM(), instead it directly uses glm.fit, meaning

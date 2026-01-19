@@ -1,12 +1,20 @@
 #' Print method for `TriLLIEM` objects
 #'
-#' @param x an object of class `TriLLIEM`.
-#' @param digits number of digits to display.
-#' @param ... further arguments passed to or from other methods.
+#' @param x an object of class `TriLLIEM`, usually, a result of a call to
+#' [TriLLIEM].
+#' @param digits the number of significant digits to use when printing.
+#' @param ... further arguments passed to or from other methods. (FORMATTING HERE
+#' WAS WORD FOR WORD TAKEN DIRECTLY FROM THE DOCUMENTATION OF ?print.glm
+#' , MAKING NOTE OF THIS IN CASE THIS NEEDS TO BE CITED SOMEHOW)
 #'
-#' @returns Prints details of the `TriLLIEM` model, only including genetically
-#' relevant parameters in listed coefficients.  To view all fitted parameters,
+#' @returns Prints details of the `TriLLIEM` model, with nuisance parameters
+#' (e.g., mating type parameters) omitted.  To view all fitted parameters,
 #' run `coef(x)`.
+#'
+#' @examples
+#' res <- TriLLIEM(mtmodel = "HWE", effects = c("C", "M", "Im"), dat = example_dat4R)
+#' print(res)
+#'
 #' @export
 #'
 print.TriLLIEM <- function (x, digits = max(3L, getOption("digits") - 3L), ...)

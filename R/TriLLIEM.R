@@ -1,79 +1,193 @@
-#' Running a loglinear analysis of trio data.
+#' Fit the log-linear model to trio data.
+#'
+#' @description
+#' This function is used to fit the user-specified log-linear model to trio
+#' count data.
+#'
 #'
 #' @param mtmodel Mating type model to use in the analysis, can be "`HWE`" for
-#' Hardy-Weinberg Equilibrium, "`MS`" for Mating Symmetry, and "`MaS`" for Mating Asymmetry.
+#' Hardy-Weinberg Equilibrium, "`MS`" for Mating Symmetry (default), and "`MaS`"
+#' for Mating Asymmetry.
 #' @param effects A vector listing the effects, as strings, to include
-#' in the model.  Example effects include:
+#' in the model. Effects can include:
 #' \describe{
 #'  \item{"`C`"}{Child effects.}
 #'  \item{"`M`"}{Maternal effects.}
 #'  \item{"`Im`"}{Maternal imprinting effects.}
 #'  \item{"`If`"}{Paternal imprinting effects.}
+#'  \item{"`E:C`"}{Child gene environment interactions.}
+#'  \item{"`E:M`"}{Maternal gene environment interactions.}
 #'  \item{"`E:Im`"}{Maternal imprinting by environment interactions.}
+#'  \item{"`E:If`"}{Paternal imprinting by environment interactions.}
 #' }
-#' @param includeE A logical value indicating whether to include environment
-#' interaction effects.  If set to "`FALSE`", any exposed counts in `dat` are
-#' combined with the respective unexposed count.
-#' @param Einteraction A string indicating what variable environmental effects
-#' interact with.  Can be "`Im`", "`If`", "`C`", or "`M`".
-#' @param Estrat A logical value indicating whether to use a stratified approach
-#' for environmental interactions equivalent to that of EMIM and/or Haplin.
-#' @param Eanova A logical value indicating if this is for the sake of running
-#' anova on a data set with a non-zero "`E`" column but without "`E`" effects.  Should
-#' be left as "`FALSE`" otherwise, as the degrees of freedom will be incorrect.
-#' @param includeD A logical value indicating whether to use the hybrid
-#' model with controls.  If set to "`FALSE`", any control trios will be removed
-#' from the data set prior to analysis.
+#' Default is `c("C", "M")`.
 #' @param dat A data frame with triad data, with the formatting of
 #' [example_dat4R].
-#' @param PStest A logical value indicating whether to perform a population
-#' stratification test on the data.
-#' @param includeIm A logical value indicating whether to include maternal
-#' imprinting in the model, equivalent to adding "`Im`" in the "`effects`" vector.
-#' @param includeIf A logical value indicating whether to include paternal
-#' imprinting in the model, equivalent to adding "`If`" in the "`effects`" vector.
-#' @param Minit Initial proportion of maternal inheritence to split the triple
-#' heterozygote cell by if the EM algorithm is necessary.
-#' @param max.iter Maximum number of iterations for the EM algorithm.
+#' @param includeE A logical value indicating whether to include environment
+#' interaction effects. If set to "`FALSE`", any exposed counts in `dat` are
+#' combined with the respective unexposed count (treating `dat` as if all
+#' `E = 0`).  Default is `FALSE`.
+#' @param Estrat A logical value indicating whether to use a stratified approach
+#' for environmental interactions. Default is `FALSE`. See details for more
+#'  information.
+#' @param Eanova A logical value indicating if this is for the sake of running
+#' anova to compare a model with environmental interactions to a model that does
+#' not include environmental interactions.  Should be left as "`FALSE`" if not
+#' for this purpose, as the degrees of freedom will be incorrect.  See details
+#' for more information. Default is `FALSE`.
+#' @param includeD A logical value indicating whether to use the hybrid
+#' model with controls.  If set to "`FALSE`", any control trios will be removed
+#' from the data set prior to analysis. Default is `FALSE`.
+#' @param Minit Initial value for the proportion of triple heterozygote (`M=1`,
+#' `F=1`, `C=1`) category where the '1' allele is passed from the mother to child.
+#' This is used to initialize the EM algorithm. Default is 0.5.
+#' @param max.iter Maximum number of iterations for the EM algorithm.  Default
+#' is 30.
 #' @param EM.diag A logical value indicating whether to show diagnostic messages
-#' for the EM algorithm.
+#' for the EM algorithm.  Default is `FALSE`.
 #'
-#' @return An object of class "`TriLLIEM`", which inherits from class "`glm`".
+#' @details
+#' Fits the specified log-linear model of \insertCite{Wein+98;textual}{TriLLIEM} to
+#' `dat` using R's [glm] framework.  This includes \insertCite{WeinUmba05;textual}{TriLLIEM}'s
+#' hybrid model allowing for control triads.  When imprinting effects ("`Im`" or
+#' "`If`") are included, an EM algorithm is run to estimate the counts of
+#' \eqn{(M, F, C) = (1, 1, 1)} triads which are maternally and paternally
+#' inherited.  Normally, if this was done using the [glm] function, the computed
+#' likelihoods would use these estimated counts, which is incorrect. This function,
+#' alongside its methods like [summary.TriLLIEM] and [anova.TriLLIEM],
+#' performs the EM algorithm while using the original observed counts to correctly
+#' obtain likelihoods.
+#'
+#' The model formula supplied to [glm] is made up of the genetic effects supplied
+#' in `effects`, alongside several nuisance parameters.  These include:
+#'  - Mating type parameters, dependent on the specified `mtmodel`,
+#'  - `D`, if `includeD = TRUE`,
+#'  - `E:D`, if `includeD = TRUE` and `includeE = TRUE`,
+#'  - Mating type parameter by `E` interactions, if `includeE = TRUE`; `E`, if
+#'  `includeE = TRUE` and `mtmodel = "HWE"` (both necessary as shown in
+#'  \insertCite{Shin+10;textual}{TriLLIEM}).
+#'  These nuisance parameters are omitted when printing the function output,
+#'  but may be viewed by using the [coef] function on the output.
+#'
+#' `Estrat = TRUE` forces every every listed effect in `effects` to have its
+#' gene environment interaction included in the model, regardless of whether the
+#' user has specified them explicitly or not. This essentially stratifies the
+#' model by `E`, and is useful for replicating the stratified models necessary
+#' for analyzing gene environment interactions in `Haplin`
+#' \insertCite{GjesLie06}{TriLLIEM} and `EMIM` \insertCite{HoweCord12}{TriLLIEM}.
+#'
+#' `Eanova = TRUE` allows the model to be fit when \eqn{E \neq 0} rows are
+#' present but `includeE = FALSE`, without modifying these exposed rows.
+#' This is only useful for using `anova.TriLLIEM`
+#' to determine if models with gene-environment interactions are statistically
+#' different from models without gene-environment interactions.  Since this option
+#' keeps these \eqn{E \neq 0} categories without using the `E` parameter though,
+#' the fitted model will use incorrect degrees of freedom in its significance
+#' tests, and hence should not be used for any inferences besides this very
+#' specific case of model comparison.
+#'
+#' All `TriLLIEM` objects are of family `poisson_em`, a modified version of the
+#' poisson family to account for additional data created by the EM algorithm when
+#' computing residuals and AIC.
+#'
+#' @return An object of class "`TriLLIEM`", which inherits from class "`glm`"
+#' and has the same components as the output of [glm], with the following
+#' modifications:
+#' \describe{
+#'  \item{`df.residual`}{if imprinting effects are specified, subtracted by the
+#'  number of additional rows introduced by the EM algorithm.}
+#'  \item{`df.null`}{if imprinting effects are specified, subtracted by the
+#'  number of additional rows introduced by the EM algorithm.}
+#'  \item{`EM_iter`}{number of EM algorithm iterations before convergence.}
+#'  \item{`y_initial`}{initial supplied data frame, `dat`, before addition of rows
+#'  by EM.}
+#'  \item{`grp`}{list of vectors, with each vector containing indices of grouped
+#'  rows in the data after the EM algorithm is applied (`y`). Aggregating these grouped
+#'  rows by sum will yield `y_initial`.}
+#' }
+#'
 #' @export
 #'
 #' @examples
-#' res <- TriLLIEM(mtmodel = "HWE", effects = c("C", "M", "Im"), dat = example_dat4R)
-#' res |> summary() |> coef()
-TriLLIEM <- function(mtmodel = "MS", effects = c("C", "M"), dat, PStest = FALSE,
-                     includeE = FALSE, Einteraction = "M", Estrat = FALSE, Eanova = FALSE,
-                     includeD = FALSE, includeIm = FALSE,
-                     includeIf = FALSE, Minit = 0.5, max.iter = 30, EM.diag = FALSE) {
-  ## Test for violation of HWE when pop strat (sim MS data and compare HWE vs MS)
-  ## Only one of E:M or E:Im
-  ## test out with other code
-  ## p values should be smaller than haplin
-  ## Test with D compared to EMIM and haplin
-  if (includeIm){
-    effects <- c(effects, "Im")
-  }
-  if (includeIf){
-    effects <- c(effects, "If")
-  }
-  # If Einteraction is not in effect, give warning and add it to effect
-  if (!(Einteraction %in% effects) && includeE == TRUE){
-    warning("Einteraction is not in effects, including it manually.")
-    effects <- c(effects, Einteraction)
+#' res1 <- TriLLIEM(mtmodel = "HWE", effects = c("C", "M", "Im"), dat = example_dat4R)
+#' summary(res1)
+#'
+#' dat <-
+#'   simulateData(
+#'     nControl = 1000,
+#'     propE = c(0.1, 0.4),
+#'     propE.control = c(0.2, 0.2),
+#'     nPop = 2,
+#'     maf = c(0.3, 0.4),
+#'     prev.byPop = c(0.2, 0.3),
+#'     prop.byPop = c(0.6, 0.4)
+#'   )
+#' ## Obtain the non-stratified and stratified models and compare them via anova
+#' res2 <-
+#'   TriLLIEM(
+#'     mtmodel = "HWE",
+#'     effects = c("C", "M", "Im", "E:Im"),
+#'     dat = dat,
+#'     includeE = TRUE,
+#'     includeD = TRUE
+#'   )
+#' res3 <-
+#'   TriLLIEM(
+#'     mtmodel = "HWE",
+#'     effects = c("C", "M", "Im", "E:Im"),
+#'     dat = dat,
+#'     includeE = TRUE,
+#'     Estrat = TRUE,
+#'     includeD = TRUE
+#'   )
+#' anova(res2, res3)
+#'
+#' ## Compare non-stratified model to a model without E by setting Eanova = TRUE
+#' res4 <-
+#'   TriLLIEM(
+#'     mtmodel = "HWE",
+#'     effects = c("C", "M", "Im"),
+#'     dat = dat,
+#'     Eanova = TRUE,
+#'     includeD = TRUE
+#'   )
+#'
+#' anova(res2, res4)
+#'
+#' @references{
+#' \insertAllCited{}
+#' }
+TriLLIEM <- function(mtmodel = "MS", effects = c("C", "M"), dat,
+                     includeE = FALSE, Estrat = FALSE, Eanova = FALSE,
+                     includeD = FALSE, Minit = 0.5, max.iter = 30, EM.diag = FALSE) {
+  for (effect in effects){
+    if (grepl("E:", effect)){
+      noeeff <- sub("E:", "", effect)
+      if (!(noeeff %in% effects)){
+        warning(paste0(effect, " is given as an environmental interaction but ",
+                       noeeff, " is not listed as an effect. Model inferences
+                       may be invalid.\n"))
+      }
+    }
+    else if (grepl(":E", effect)){
+      noeeff <- sub(":E", "", effect)
+      if (!(noeeff %in% effects)){
+        warning(paste0(effect, " is given as an environmental interaction but ",
+                       noeeff, " is not listed as an effect. Model inferences
+                       may be invalid.\n"))
+      }
+    }
   }
 
   if (all(c("C", "Im", "If") %in% effects)){
-    stop("Cannot include maternal and paternal imprinting with child effects.")
+    stop("Cannot include maternal and paternal imprinting with child effects.\n")
   }
 
   if(length(unique(dat$E)) < 2 && includeE){
-    stop("E column must have at least 2 distinct values.")
+    stop("E column must have at least 2 distinct values.\n")
   }
   if(length(unique(dat$D)) < 2 && includeD){
-    stop("D column must have at least 2 distinct values.")
+    stop("D column must have at least 2 distinct values.\n")
   }
 
   cal <- match.call()
@@ -109,7 +223,7 @@ TriLLIEM <- function(mtmodel = "MS", effects = c("C", "M"), dat, PStest = FALSE,
         {if(mtmodel == "HWE") append(., "E") else .}
     } else {
       Eeffects <-
-        c(mteffect, Einteraction) %>%
+        c(mteffect) %>%
         paste0(":E", sep = "") %>%
         {if(mtmodel == "HWE") append(., "E") else .}
     }
@@ -149,30 +263,6 @@ TriLLIEM <- function(mtmodel = "MS", effects = c("C", "M"), dat, PStest = FALSE,
 
   ## groupings of categories for em
   grp <- list()
-
-  # Setup results objects
-  resVec <- vector(length = length(effects))
-  names(resVec) <- effects
-  pvalVec <- vector(length = length(effects))
-  names(pvalVec) <- effects
-  resVecPS <- NULL
-  pvalVecPS <- NULL
-
-  # Include test and results under population stratification
-  ## try catch for PStest in case glm fails due to low counts
-  if (PStest == TRUE) {
-    resVecPS <- vector(length = length(effects))
-    names(resVecPS) <- effects
-    pvalVecPS <- vector(length = length(effects))
-    names(pvalVecPS) <- effects
-
-    if (!includeD) {
-      stop("Can only test for population stratification if there are control trios\n")
-    } else {
-      PSeffect <- paste0(mteffect, ":D")
-      modelformula.PS <- paste(modelformula, PSeffect, sep = "+")
-    }
-  }
 
   ## Groupings for EM
   grp <- c(grp, list(c(9,10)))
@@ -282,28 +372,6 @@ TriLLIEM <- function(mtmodel = "MS", effects = c("C", "M"), dat, PStest = FALSE,
   res$grp <- grp
   res$df.null <- res$df.null - length(grp)
   res$df.residual <- res$df.residual - length(grp)
-
-  # R is not consistent about how interaction is specified. Even though it
-  # is fit as E:M, sometimes R flips it to M:E in the output of results.
-  # if (is.element("M:E", names(coef(res)))) {
-  #   effects[effects == "E:M"] <- "M:E"
-  # }
-  #
-  # for (j in 1:length(effects)) {
-  #   resVec[j] <- exp(summary(res)$coef[effects[j], 1])
-  #   pvalVec[j] <- summary(res)$coef[effects[j], 4]
-  # }
-  #
-  # test.res <- NULL
-  # if (PStest == TRUE) {
-  #   res.PS <- glm(as.formula(modelformula.PS), data = origDat, family = poisson())
-  #   test.res <- anova(res, res.PS, test = "LRT")
-  #
-  #   for (j in 1:length(effects)) {
-  #     resVecPS[j] <- exp(summary(res.PS)$coef[effects[j], 1])
-  #     pvalVecPS[j] <- summary(res.PS)$coef[effects[j], 4]
-  #   }
-  # }
 
   res$call <- cal
   return(res)

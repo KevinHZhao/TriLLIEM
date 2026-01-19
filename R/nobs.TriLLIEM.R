@@ -5,7 +5,7 @@
 #'
 #' @returns an integer representing the number of observations in the data used
 #' to get `object`.
-#' @export
+#' @noRd
 #'
 #' @examples
 #' model <- TriLLIEM(dat = example_dat4R)
