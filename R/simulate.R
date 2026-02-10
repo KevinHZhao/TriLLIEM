@@ -97,7 +97,7 @@
 #'  To view the data frame with underlying simulation probabilities, counts for
 #'  either parent of origin case when mother, father, and child are all,
 #'  heterozygous, and by sub-population when simulating population
-#'  stratification, use [fullview()].
+#'  stratification, use [fullview].
 #'
 #' @return An object of class `TriLLIEM.sim`, a data frame with columns for:
 #' \describe{
@@ -121,7 +121,7 @@
 #' \insertAllCited{}
 #' }
 #'
-#' @seealso [example_dat4R], [fullview()]
+#' @seealso [example_dat4R], [fullview]
 #'
 #' @export
 #'
@@ -136,7 +136,12 @@
 #' simulateData(nControl = 1000, V = c(1, 1.6, 1.6^2), propE = 0.3, Einteraction = "M")
 #'
 #' ## Null model with 3 different sub-populations
-#' simulateData(nPop = 3, maf = c(0.1, 0.2, 0.3), prev.byPop = c(0.2, 0.1, 0.4), prop.byPop = c(0.3, 0.3, 0.4))
+#' simulateData(
+#'   nPop = 3,
+#'   maf = c(0.1, 0.2, 0.3),
+#'   prev.byPop = c(0.2, 0.1, 0.4),
+#'   prop.byPop = c(0.3, 0.3, 0.4)
+#' )
 #'
 #'## Null model with 2 different sub-populations, environmental exposures, and controls
 #' simulateData(
@@ -245,7 +250,7 @@ simulateData <- function(nCases = 1000, nControl = 0,
     beta <- (1 - maf) * (1 - Fst) / Fst
 
     # Generate allele frequencies for the nPop populations
-    q <- rbeta(nPop, shape1 = alpha, shape2 = beta)
+    q <- stats::rbeta(nPop, shape1 = alpha, shape2 = beta)
   } else {
     q <- maf
   }
@@ -269,15 +274,15 @@ simulateData <- function(nCases = 1000, nControl = 0,
   ## These will be 2*npop vectors, first npop is for E = 1, last npop is for E = 0
 
   sampled_pop_E_counts <-
-    rmultinom(
+    stats::rmultinom(
       n = 1,
       size = nCases,
       prob = c(
         prCase.byPop
       )
-    ) %>%
+    ) |>
     cbind(
-      rmultinom(
+      stats::rmultinom(
         n = 1,
         size = nControl,
         prob = c(

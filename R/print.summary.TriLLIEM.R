@@ -5,15 +5,14 @@
 #' @param digits the number of significant digits to use when
 #' printing.
 #' @param signif.stars logical. If `TRUE`, 'significance stars' are printed for
-#' each coefficient. (FORMATTING HERE
-#' WAS WORD FOR WORD TAKEN DIRECTLY FROM THE DOCUMENTATION OF ?print.summary.glm
-#' , MAKING NOTE OF THIS IN CASE THIS NEEDS TO BE CITED SOMEHOW)
+#' each coefficient, with significance codes shown under the coefficients table.
+#' @param ... additional arguments passed to [printCoefmat].
 #'
 #' @returns Prints summary of the `TriLLIEM` model, displaying the original call
 #' to the function, the matrix of coefficients, the AIC, and the number of Fisher
 #' Scoring and EM iterations.
 #'
-#' @seealso [print.summary.glm()]
+#' @seealso [print.summary.glm]
 #'
 #' @examples
 #' res <- TriLLIEM(mtmodel = "HWE", effects = c("C", "M", "Im"), dat = example_dat4R)
@@ -26,14 +25,12 @@ print.summary.TriLLIEM <- function (x,
                                     ...
 )
 {
-  ## TRY TO ABSORB EVERYTHING INTO THE ..., remove show.residuals, remove symbolic cor
-
   cat("\nCall:\n", paste(deparse(x$call), sep = "\n", collapse = "\n"),
       "\n", sep = "")
 
   regex_filter <-
     "^as\\.factor\\(mt\\_MS\\)[1-6](\\:E)?$|^\\(Intercept\\)$|^HWgeno(\\:E)?$|^as\\.factor\\(mt\\_MaS\\)[1-9](\\:E)?$|^E$|^D$|^E\\:D$"
-  positions <- grep(regex_filter, rownames(coef(x)))
+  positions <- grep(regex_filter, rownames(stats::coef(x)))
 
   if (length(x$aliased[-positions]) == 0L) {
     cat("\nNo Coefficients\n")
@@ -53,11 +50,11 @@ print.summary.TriLLIEM <- function (x,
                                                                colnames(coefs)))
       coefs[!aliased, ] <- x$coefficients[-positions,]
     }
-    printCoefmat(coefs, digits = digits, signif.stars = signif.stars,
+    stats::printCoefmat(coefs, digits = digits, signif.stars = signif.stars,
                  na.print = "NA", ...)
   }
 
-  if (nzchar(mess <- naprint(x$na.action)))
+  if (nzchar(mess <- stats::naprint(x$na.action)))
     cat("  (", mess, ")\n", sep = "")
   cat("AIC: ", format(x$aic, digits = max(4L, digits + 1L)),
       "\n\n", "Number of Fisher Scoring iterations: ", x$iter,

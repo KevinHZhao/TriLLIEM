@@ -1,6 +1,6 @@
 #' Example triad data
 #'
-#' Example data formatted to be used in the [TriLLIEM()] function.
+#' Example data formatted to be used in the [TriLLIEM] function.
 #'
 #' @format
 #' A dataframe with columns for:
@@ -19,7 +19,5 @@
 #'    \item{D}{disease present (1)/not present (0)}
 #'    \item{count}{counts for each category of maternal (M), paternal (F), and
 #'    child (C) genotypes}
-#'    ...
 #' }
 "example_dat4R"
-"PoO_df"

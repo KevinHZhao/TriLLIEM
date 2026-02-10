@@ -57,8 +57,8 @@ runEMIM <- function(mtmodel = "MS", effects = c("C", "M"), peddat,
   # must be removed
   if (includeE) {
     ## Subset the data into cases where E=0 and once with E=1
-    subset0 <- peddat %>% dplyr::filter(E == 0)
-    subset1 <- peddat %>% dplyr::filter(E == 1)
+    subset0 <- peddat |> dplyr::filter(E == 0)
+    subset1 <- peddat |> dplyr::filter(E == 1)
 
     # All
     peddat <- peddat[, c("famid", "indid", "pid", "mid", "sex", "D", "genotype1", "genotype2")]
@@ -158,4 +158,69 @@ runEMIM <- function(mtmodel = "MS", effects = c("C", "M"), peddat,
   attr(res, "Einteraction") <- Einteraction
 
   return(res)
+}
+
+summ_emim <- function(res){
+  resVec <- c()
+  sdVec <- c()
+  pvalVec <- c()
+  if(attr(res, "includeE")) {
+    list2env(res, envir = environment())
+    resVec["C"] <- exp(resAll$lnR1)
+    sdVec["C"] <- resAll$sd_lnR1
+    resVec["M"] <- exp(resAll$lnS1)
+    sdVec["M"] <- resAll$sd_lnS1
+    pvalVec["C"] <- 2 * pnorm(abs(resAll$lnR1 / resAll$sd_lnR1), lower = F)
+    pvalVec["M"] <- 2 * pnorm(abs(resAll$lnS1 / resAll$sd_lnS1), lower = F)
+    resVec["Im"] <- exp(resAll$lnIm)
+    resVec["If"] <- exp(resAll$lnIp)
+
+    if(attr(res, "Einteraction") == "M"){
+      resVec <- resVec[! names(resVec) == "M"]
+      resVec["M[E=0]"] <- exp(res0$lnS1)
+      resVec["M[E=1]"] <- exp(res1$lnS1)
+      resVec["E:M"] <- resVec["M[E=1]"] / resVec["M[E=0]"]
+
+      # Get a Wald-type GE test like Haplin
+      z <- abs(res0$lnS1 - res1$lnS1) / sqrt(res0$sd_lnS1^2 + res1$sd_lnS1^2)
+      pvalVec["E:M"] <- 2 * pnorm(z, lower = F)
+    } else if(attr(res, "Einteraction") == "Im"){ ## CHeck over notes
+      resVec <- resVec[! names(resVec) == "Im"]
+      resVec["Im[E=0]"] <- exp(res0$lnIm)
+      resVec["Im[E=1]"] <- exp(res1$lnIm)
+      resVec["E:Im"] <- resVec["Im[E=1]"] / resVec["Im[E=0]"]
+
+      # Get a Wald-type GE test like Haplin
+      z <- abs(res0$lnIm - res1$lnIm) / sqrt(res0$sd_lnIm^2 + res1$sd_lnIm^2)
+      pvalVec["E:Im"] <- 2 * pnorm(z, lower = F)
+    } else if(attr(res, "Einteraction") == "If"){
+      resVec <- resVec[! names(resVec) == "If"]
+      resVec["If[E=0]"] <- exp(res0$lnIp)
+      resVec["If[E=1]"] <- exp(res1$lnIp)
+      resVec["E:If"] <- resVec["If[E=1]"] / resVec["If[E=0]"]
+
+      # Get a Wald-type GE test like Haplin
+      z <- abs(res0$lnIp - res1$lnIp) / sqrt(res0$sd_lnIp^2 + res1$sd_lnIp^2)
+      pvalVec["E:If"] <- 2 * pnorm(z, lower = F)
+    }
+
+    sdVec["Im"] <- resAll$sd_lnIm
+    pvalVec["Im"] <- 2 * pnorm(abs(resAll$lnIm / resAll$sd_lnIm), lower = F)
+    sdVec["If"] <- resAll$sd_lnIp
+    pvalVec["If"] <- 2 * pnorm(abs(resAll$lnIp / resAll$sd_lnIp), lower = F)
+  } else {
+    resVec["C"] <- exp(res$lnR1)
+    sdVec["C"] <- res$sd_lnR1
+    pvalVec["C"] <- 2 * pnorm(abs(res$lnR1 / res$sd_lnR1), lower = F)
+    resVec["M"] <- exp(res$lnS1)
+    sdVec["M"] <- res$sd_lnS1
+    pvalVec["M"] <- 2 * pnorm(abs(res$lnS1 / res$sd_lnS1), lower = F)
+    resVec["Im"] <- exp(res$lnIm)
+    sdVec["Im"] <- res$sd_lnIm
+    pvalVec["Im"] <- 2 * pnorm(abs(res$lnIm / res$sd_lnIm), lower = F)
+    resVec["If"] <- exp(res$lnIp)
+    sdVec["If"] <- res$sd_lnIp
+    pvalVec["If"] <- 2 * pnorm(abs(res$lnIp / res$sd_lnIp), lower = F)
+  }
+  return(list(effects = resVec, se = sdVec, pvals = pvalVec))
 }

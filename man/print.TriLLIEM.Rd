@@ -12,9 +12,7 @@
 
 \item{digits}{the number of significant digits to use when printing.}
 
-\item{...}{further arguments passed to or from other methods. (FORMATTING HERE
-WAS WORD FOR WORD TAKEN DIRECTLY FROM THE DOCUMENTATION OF ?print.glm
-, MAKING NOTE OF THIS IN CASE THIS NEEDS TO BE CITED SOMEHOW)}
+\item{...}{arguments passed to or from other methods.}
 }
 \value{
 Prints details of the \code{TriLLIEM} model, with nuisance parameters

@@ -16,18 +16,18 @@ An object of class "\code{anova.TriLLIEM}" inheriting from class
 "\code{anova}".
 }
 \description{
-This method is modelled after the \code{anova.glm} method.  It produces an
+This method is modelled after the \link{anova.glm} method.  It produces an
 analysis of deviance table for multiple nested models.
 }
 \details{
-Like \code{anova.glm}, each model's residual degrees of freedom and deviances are
+Like \link{anova.glm}, each model's residual degrees of freedom and deviances are
 given, alongside their respective differences between the models.
 Models should be nested for these
 results to be statistically interpretable. The last column shows the p-value
 from chi-squared tests comparing the difference in deviance for each model.
 
 \code{TriLLIEM} objects modelling any sort of imprinting effect must use this
-function, as the EM algorithm used in \code{TriLLIEM} causes the \code{anova.glm()}
+function, as the EM algorithm used in \code{TriLLIEM} causes the \link{anova.glm}
 function to treat the estimated values as having been truly observed,
 modifying the degrees of freedom.
 }
@@ -37,5 +37,5 @@ model2 <- TriLLIEM(dat = example_dat4R, effects = c("C", "M"))
 anova(model1, model2)
 }
 \seealso{
-\code{\link[=anova.glm]{anova.glm()}}
+\link{anova.glm}
 }

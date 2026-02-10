@@ -19,9 +19,9 @@ to \link{summary.TriLLIEM}.}
 printing.}
 
 \item{signif.stars}{logical. If \code{TRUE}, 'significance stars' are printed for
-each coefficient. (FORMATTING HERE
-WAS WORD FOR WORD TAKEN DIRECTLY FROM THE DOCUMENTATION OF ?print.summary.glm
-, MAKING NOTE OF THIS IN CASE THIS NEEDS TO BE CITED SOMEHOW)}
+each coefficient, with significance codes shown under the coefficients table.}
+
+\item{...}{additional arguments passed to \link{printCoefmat}.}
 }
 \value{
 Prints summary of the \code{TriLLIEM} model, displaying the original call
@@ -37,5 +37,5 @@ print(summary(res))
 
 }
 \seealso{
-\code{\link[=print.summary.glm]{print.summary.glm()}}
+\link{print.summary.glm}
 }

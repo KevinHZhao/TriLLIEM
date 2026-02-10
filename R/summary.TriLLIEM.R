@@ -1,9 +1,8 @@
 #' Summary function for TriLLIEM functions
 #'
-#' @param object an object of class "`TriLLIEM`, usually, a result of a call to
-#' [TriLLIEM].(FORMATTING HERE
-#' WAS WORD FOR WORD TAKEN DIRECTLY FROM THE DOCUMENTATION OF ?summary.glm
-#' , MAKING NOTE OF THIS IN CASE THIS NEEDS TO BE CITED SOMEHOW)
+#' @param object an object of class "`TriLLIEM`", resulting from a call to
+#' [TriLLIEM].
+#' @param ... arguments passed to or from other methods.
 #'
 #' @details
 #' Due to [TriLLIEM] using the EM algorithm when fitting imprinting effects,
@@ -14,9 +13,9 @@
 #' @return A list with the same components as those returned by [summary.glm],
 #' but with the addition of the following:
 #' \describe{
-#'  \item{terms}{the component from `object`.}
-#'  \item{aic}{the component from `object`.}
-#'  \item{EM_iter}{the component from `object`}
+#'  \item{terms}{the same component from `object`, always included for "`TriLLIEM`" objects.}
+#'  \item{aic}{the same component from `object`, always included for "`TriLLIEM`" objects}
+#'  \item{EM_iter}{the same component from `object`, always included for "`TriLLIEM`" objects}
 #' }
 #'
 #' @export
@@ -24,10 +23,12 @@
 #' @examples
 #' res <- TriLLIEM(mtmodel = "HWE", effects = c("C", "M", "Im"), dat = example_dat4R)
 #' summary(res)
-summary.TriLLIEM <- function (object)
+#'
+#' @importFrom stats vcov
+summary.TriLLIEM <- function (object, ...)
 {
   df.r <- object$df.residual
-  aliased <- is.na(coef(object))
+  aliased <- is.na(stats::coef(object))
   p <- object$rank
   if (p > 0) {
     p1 <- 1L:p
@@ -38,7 +39,7 @@ summary.TriLLIEM <- function (object)
     s.err <- sqrt(var.cf)
     tvalue <- coef.p/s.err
     dn <- c("Estimate", "Std. Error")
-    pvalue <- 2 * pnorm(-abs(tvalue))
+    pvalue <- 2 * stats::pnorm(-abs(tvalue))
     coef.table <- cbind(coef.p, s.err, tvalue, pvalue)
     dimnames(coef.table) <- list(names(coef.p), c(dn, "z value", "Pr(>|z|)"))
     df.f <- NCOL(covmat)
@@ -49,7 +50,7 @@ summary.TriLLIEM <- function (object)
   ans <- c(
     object[keep],
     list(
-      deviance.resid = TriLLIEM:::residuals.TriLLIEM(object, type = "deviance"),
+      deviance.resid = residuals.TriLLIEM(object, type = "deviance"),
       coefficients = coef.table,
       aliased = aliased,
       dispersion = 1,
@@ -61,7 +62,3 @@ summary.TriLLIEM <- function (object)
   class(ans) <- c("summary.TriLLIEM", "summary.glm")
   return(ans)
 }
-
-## summary for trill objects
-## Add anova.TriLLIEM for LRT
-## Document that summary.glm from base r was modified to get this...

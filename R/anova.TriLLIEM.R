@@ -1,28 +1,28 @@
 
 #' ANOVA method for TriLLIEM objects
 #'
-#' This method is modelled after the `anova.glm` method.  It produces an
+#' This method is modelled after the [anova.glm] method.  It produces an
 #' analysis of deviance table for multiple nested models.
 #'
 #' @param object An object of class `TriLLIEM`.
 #' @param ... Additional `TriLLIEM` objects for comparison to `object`
 #'
 #' @details
-#' Like `anova.glm`, each model's residual degrees of freedom and deviances are
+#' Like [anova.glm], each model's residual degrees of freedom and deviances are
 #' given, alongside their respective differences between the models.
 #' Models should be nested for these
 #' results to be statistically interpretable. The last column shows the p-value
 #' from chi-squared tests comparing the difference in deviance for each model.
 #'
 #' `TriLLIEM` objects modelling any sort of imprinting effect must use this
-#' function, as the EM algorithm used in `TriLLIEM` causes the `anova.glm()`
+#' function, as the EM algorithm used in `TriLLIEM` causes the [anova.glm]
 #' function to treat the estimated values as having been truly observed,
 #' modifying the degrees of freedom.
 #'
 #' @returns An object of class "`anova.TriLLIEM`" inheriting from class
 #' "`anova`".
 #'
-#' @seealso [anova.glm()]
+#' @seealso [anova.glm]
 #' @export
 #'
 #' @examples
@@ -36,7 +36,8 @@ anova.TriLLIEM <- function (object, ...) {
 
   #stop()## Make it only work when multiple objects specified
 
-  res <- stats:::anova.glm(object, ..., dispersion = dispersion, test = test)
+  class(object) <- "glm"
+  res <- stats::anova(object, ..., dispersion = dispersion, test = test)
   ## ANOVA will not call TriLLIEM(), instead it directly uses glm.fit, meaning
   ## df's will be incorrectly shifted for certain effects...
   df_shift <- length(object$grp)
@@ -53,12 +54,12 @@ anova.TriLLIEM <- function (object, ...) {
   df.dispersion <- Inf
 
   ## df.dispersion = Inf for poisson family, and dispersion should always be 1
-  anova_res <- stat.anova(table = res[, -ncol(res)], test = test, scale = 1, df.scale = Inf, n = TriLLIEM::nobs.TriLLIEM(object))
+  anova_res <- stats::stat.anova(table = res[, -ncol(res)], test = test, scale = 1, df.scale = Inf, n = nobs.TriLLIEM(object))
 
   ## Correcting res with the proper test
   res[, ncol(res)] <- anova_res[, ncol(anova_res)]
 
-  coefs <- coef(object)
+  coefs <- stats::coef(object)
   regex_filter <-
     "^as\\.factor\\(mt\\_MS\\)[1-6](\\:E)?$|^\\(Intercept\\)$|^HWgeno(\\:E)?$|^as\\.factor\\(mt\\_MaS\\)[1-9](\\:E)?$|^E$|^D$|^E\\:D$"
   positions <- grep(regex_filter, names(coefs))

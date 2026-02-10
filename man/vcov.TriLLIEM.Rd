@@ -4,10 +4,12 @@
 \alias{vcov.TriLLIEM}
 \title{Calculate Variance-Covariance Matrix for a \code{TriLLIEM} Object}
 \usage{
-\method{vcov}{TriLLIEM}(res)
+\method{vcov}{TriLLIEM}(object, ...)
 }
 \arguments{
-\item{res}{a \code{TriLLIEM} object.}
+\item{object}{a \code{TriLLIEM} object.}
+
+\item{...}{additional arguments, UNUSED.}
 }
 \value{
 A matrix of covariances between parameters, accounting for the EM

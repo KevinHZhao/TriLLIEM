@@ -156,7 +156,7 @@ we reassign these particular mating pairs by setting
 To view the data frame with underlying simulation probabilities, counts for
 either parent of origin case when mother, father, and child are all,
 heterozygous, and by sub-population when simulating population
-stratification, use \code{\link[=fullview]{fullview()}}.
+stratification, use \link{fullview}.
 }
 \examples{
 ## Maternal effect of 2, and paternal imprinting of 3.
@@ -169,7 +169,12 @@ simulateData(V = c(1, 1.5, 1.5^2), propE = 0.3, Einteraction = "If")
 simulateData(nControl = 1000, V = c(1, 1.6, 1.6^2), propE = 0.3, Einteraction = "M")
 
 ## Null model with 3 different sub-populations
-simulateData(nPop = 3, maf = c(0.1, 0.2, 0.3), prev.byPop = c(0.2, 0.1, 0.4), prop.byPop = c(0.3, 0.3, 0.4))
+simulateData(
+  nPop = 3,
+  maf = c(0.1, 0.2, 0.3),
+  prev.byPop = c(0.2, 0.1, 0.4),
+  prop.byPop = c(0.3, 0.3, 0.4)
+)
 
 ## Null model with 2 different sub-populations, environmental exposures, and controls
 simulateData(
@@ -189,5 +194,5 @@ simulateData(
 }
 }
 \seealso{
-\link{example_dat4R}, \code{\link[=fullview]{fullview()}}
+\link{example_dat4R}, \link{fullview}
 }

@@ -157,6 +157,7 @@
 #' @references{
 #' \insertAllCited{}
 #' }
+#' @importFrom rlang .data
 TriLLIEM <- function(mtmodel = "MS", effects = c("C", "M"), dat,
                      includeE = FALSE, Estrat = FALSE, Eanova = FALSE,
                      includeD = FALSE, Minit = 0.5, max.iter = 30, EM.diag = FALSE) {
@@ -193,7 +194,7 @@ TriLLIEM <- function(mtmodel = "MS", effects = c("C", "M"), dat,
   cal <- match.call()
 
   # Portion of model equation depends on mating type model
-  dat <- dat %>% dplyr::mutate(offset = dplyr::case_when(type == 9 ~ 2, .default = 1))
+  dat <- dat |> dplyr::mutate(offset = dplyr::case_when(.data$type == 9 ~ 2, .default = 1))
   if (mtmodel == "HWE") {
     dat$HWgeno <- dat$M + dat$F
     mteffect <- "HWgeno"
@@ -218,19 +219,21 @@ TriLLIEM <- function(mtmodel = "MS", effects = c("C", "M"), dat,
     ## otherwise, don't include by default to save on power
     if(Estrat){
       Eeffects <-
-        c(mteffect, effects) %>%
-        paste0(":E", sep = "") %>%
-        {if(mtmodel == "HWE") append(., "E") else .}
+        c(mteffect, effects) |>
+        paste0(":E", sep = "")
+      if(mtmodel == "HWE")
+        Eeffects <- append(Eeffects, "E")
     } else {
       Eeffects <-
-        c(mteffect) %>%
-        paste0(":E", sep = "") %>%
-        {if(mtmodel == "HWE") append(., "E") else .}
+        c(mteffect) |>
+        paste0(":E", sep = "")
+      if(mtmodel == "HWE")
+        Eeffects <- append(Eeffects, "E")
     }
   } else if (!Eanova) {
     # If includeE is FALSE and not using Eanova, treat all counts as unexposed
-    dat <- dat %>%
-      dplyr::summarize(count = base::sum(count), .by = c(-E, -count)) %>%
+    dat <- dat |>
+      dplyr::summarize(count = base::sum(.data$count), .by = c(-"E", -"count")) |>
       dplyr::mutate(E = 0)
   } else {
     # If includeE is FALSE but we're still using Eanova
@@ -243,17 +246,17 @@ TriLLIEM <- function(mtmodel = "MS", effects = c("C", "M"), dat,
   Deffects <- c()
   if(includeD){
     dat <-
-      dat %>%
-      dplyr::mutate(C = C * D,
-                    M = M * D)
+      dat |>
+      dplyr::mutate(C = .data$C * .data$D,
+                    M = .data$M * .data$D)
     Deffects <- c("D", if (includeE) "E:D")
   } else if (base::sum(dat$D == 0) != 0) {
     base::warning("Control trios detected but includeD set to FALSE.  Ignoring all control trios...\n")
-    dat <- dat %>% dplyr::filter(D != 0)
+    dat <- dat |> dplyr::filter(.data$D != 0)
   }
 
   # Portion of model equation and offset depends on mating type model
-  origDat <- TriLLIEM:::add_PoO_data(dat, Mprop = c(Minit, if (includeE || hasE) Minit), includeE = (includeE || hasE))
+  origDat <- add_PoO_data(dat, Mprop = c(Minit, if (includeE || hasE) Minit), includeE = (includeE || hasE))
 
   modeleffects <- c(mteffect, Eeffects, Deffects, effects)
 
@@ -288,7 +291,7 @@ TriLLIEM <- function(mtmodel = "MS", effects = c("C", "M"), dat,
     repeat{
       counter <- counter + 1
       res <- suppressWarnings(
-        glm(as.formula(modelformula), data = origDat, family = poisson_em(grp = grp), x = TRUE)
+        stats::glm(stats::as.formula(modelformula), data = origDat, family = poisson_em(grp = grp), x = TRUE)
       )
       class(res) <- c("TriLLIEM", "glm", "lm")
 
@@ -319,11 +322,11 @@ TriLLIEM <- function(mtmodel = "MS", effects = c("C", "M"), dat,
                        if (includeE) paste0("\nE:If hat = ", IfEhat),
                        "\nProportion for maternal inheritance cell = ", Imhat/(Ifhat + Imhat),
                        if (includeE) paste0("\nProportion for maternal inheritance cell = ", ImEhat*Imhat/(ImEhat*Imhat + IfEhat*Ifhat)),
-                       "\nDifference in deviance: ", abs(deviance(res) - prev_dev),
-                       "\nMax difference in coefficients: ", max(abs(coef(res) - prev_coeffs))))
+                       "\nDifference in deviance: ", abs(stats::deviance(res) - prev_dev),
+                       "\nMax difference in coefficients: ", max(abs(stats::coef(res) - prev_coeffs))))
       }
 
-      origDat <- TriLLIEM:::add_PoO_data(dat,
+      origDat <- add_PoO_data(dat,
                               Mprop = c(Imhat/(Ifhat + Imhat),
                                         {if (includeE) ImEhat*Imhat/(ImEhat*Imhat + IfEhat*Ifhat) else if (hasE) Imhat/(Ifhat + Imhat)}),
                               includeE = (includeE || hasE)
@@ -331,21 +334,21 @@ TriLLIEM <- function(mtmodel = "MS", effects = c("C", "M"), dat,
       ## Use a proper deviance function for imprinting
       ## Check Haplin LogLik code
       ## Make conv criteria parameters
-      if(abs(deviance(res) - prev_dev) < 2e-006 &&
-         max(abs(coef(res) - prev_coeffs)) < 1e-006){
+      if(abs(stats::deviance(res) - prev_dev) < 2e-006 &&
+         max(abs(stats::coef(res) - prev_coeffs)) < 1e-006){
         break
       }
       else if(counter == max.iter){
         stop("Max iterations reached without convergence.")
         break
       }
-      prev_coeffs <- coef(res)
-      prev_dev <- deviance(res)
+      prev_coeffs <- stats::coef(res)
+      prev_dev <- stats::deviance(res)
     }
 
     # filled_inds <- which(dat$type == 9)
     # res$aic <- -2 * (sum(dpois(x = res$y[-c(filled_inds, filled_inds+1)], lambda = res$fitted.values[-c(filled_inds, filled_inds+1)], log = TRUE),
-    #                      dpois(x = dat$count[filled_inds], lambda = (Imhat + Ifhat) * exp(res$coefficients[["as.factor(mt_MS)4"]] + sum(res$coefficients[modeleffects %>% setdiff(c("Im", "If", mteffect))])), log = TRUE)
+    #                      dpois(x = dat$count[filled_inds], lambda = (Imhat + Ifhat) * exp(res$coefficients[["as.factor(mt_MS)4"]] + sum(res$coefficients[modeleffects |> setdiff(c("Im", "If", mteffect))])), log = TRUE)
     #                      )
     #                  ) +
     #   2 * res$rank
@@ -361,14 +364,14 @@ TriLLIEM <- function(mtmodel = "MS", effects = c("C", "M"), dat,
     ## I'm going to keep using the split 1,1,1 cell always so that anova LRT's work.
     ## EM doesn't happen in this case
     #res <- glm(as.formula(modelformula), data = dat, offset=log(dat$offset), family = poisson_em(grp = grp))
-    res <- glm(as.formula(modelformula), data = origDat, family = poisson_em(grp = grp), x = TRUE)
+    res <- stats::glm(stats::as.formula(modelformula), data = origDat, family = poisson_em(grp = grp), x = TRUE)
     class(res) <- c("TriLLIEM", "glm", "lm")
   }
 
   res$EM_iter <- counter
 
   ## Accounting for the fact that some observations were not observed...
-  res$y_initial <- dat %>% dplyr::select(type, mt_MS, mt_MaS, M, F, C, D, E, count, offset)
+  res$y_initial <- dat |> dplyr::select("type", "mt_MS", "mt_MaS", "M", "F", "C", "D", "E", "count", "offset")
   res$grp <- grp
   res$df.null <- res$df.null - length(grp)
   res$df.residual <- res$df.residual - length(grp)

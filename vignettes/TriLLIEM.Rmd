@@ -90,7 +90,7 @@ The \texttt{TriLLIEM()} function returns an object of class \texttt{TriLLIEM}, w
 This means users can apply many of the usual functions for interpreting results from the \texttt{glm()} function.
 To interpret \texttt{matres}, we would run:
 ```{r simpleinterp}
-matres %>% summary() %>% coef()
+matres |> summary() |> coef()
 ```
 The "Estimate" column for the $\textrm{M}$ row represents our point estimate for $s$, which we can exponentiate to obtain the equivalent risk parameter, $S$.
 Based on these results, the model estimates $\hat{S} = 1.24$ with a p-value of $0.00163$.
@@ -107,7 +107,7 @@ impres <-
     includeE = TRUE,
     includeD = TRUE
   )
-impres %>% summary() %>% coef()
+impres |> summary() |> coef()
 ```
 From the results for genetic effects, the model estimates $\hat{\textrm{S}} = 1.19, \hat{I}_{\textrm{M}} = 1.33, \hat{V} = 1.50$ with respective p-values $0.0594, 0.0199, 0.0269$.
 Note that these results use the non-stratified approach.
@@ -122,7 +122,7 @@ impres_strat <-
     Estrat = TRUE,
     includeD = TRUE
   )
-impres_strat %>% summary() %>% coef()
+impres_strat |> summary() |> coef()
 ```
 This model (which adds a $\textrm{E}:\text{M}$ effect due to stratification), has $\hat{S} = 1.18$, $\hat{I}_\textrm{M} = 1.34$, and $\hat{V} = 1.46$, with respective p-values $0.0135, 0.0237, 0.0121$.
 Note that for comparison with \textbf{EMIM} and \textbf{Haplin}, we can only compare the $\hat{V}$ estimates, since the stratified approach does not produce equivalent estimates for the main effects.

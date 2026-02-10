@@ -21,13 +21,12 @@ not present (0)}
 \item{D}{disease present (1)/not present (0)}
 \item{count}{counts for each category of maternal (M), paternal (F), and
 child (C) genotypes}
-...
 }
 }
 \usage{
 example_dat4R
 }
 \description{
-Example data formatted to be used in the \code{\link[=TriLLIEM]{TriLLIEM()}} function.
+Example data formatted to be used in the \link{TriLLIEM} function.
 }
 \keyword{datasets}

@@ -4,21 +4,21 @@
 \alias{summary.TriLLIEM}
 \title{Summary function for TriLLIEM functions}
 \usage{
-\method{summary}{TriLLIEM}(object)
+\method{summary}{TriLLIEM}(object, ...)
 }
 \arguments{
-\item{object}{an object of class "\code{TriLLIEM}, usually, a result of a call to
-\link{TriLLIEM}.(FORMATTING HERE
-WAS WORD FOR WORD TAKEN DIRECTLY FROM THE DOCUMENTATION OF ?summary.glm
-, MAKING NOTE OF THIS IN CASE THIS NEEDS TO BE CITED SOMEHOW)}
+\item{object}{an object of class "\code{TriLLIEM}", resulting from a call to
+\link{TriLLIEM}.}
+
+\item{...}{arguments passed to or from other methods.}
 }
 \value{
 A list with the same components as those returned by \link{summary.glm},
 but with the addition of the following:
 \describe{
-\item{terms}{the component from \code{object}.}
-\item{aic}{the component from \code{object}.}
-\item{EM_iter}{the component from \code{object}}
+\item{terms}{the same component from \code{object}, always included for "\code{TriLLIEM}" objects.}
+\item{aic}{the same component from \code{object}, always included for "\code{TriLLIEM}" objects}
+\item{EM_iter}{the same component from \code{object}, always included for "\code{TriLLIEM}" objects}
 }
 }
 \description{
@@ -33,4 +33,5 @@ ensure the correct residuals are computed.  See \link{TriLLIEM} for more details
 \examples{
 res <- TriLLIEM(mtmodel = "HWE", effects = c("C", "M", "Im"), dat = example_dat4R)
 summary(res)
+
 }

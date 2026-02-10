@@ -4,54 +4,54 @@ add_PoO_data <- function(dat, Mprop, includeE) {
     stop("Environmental interactions included hence Mprop should be a vector of length two!")
   }
   heteroInds.E0 <- with(dat, which(type == 9 & E == 0))
-  M.count.E0 <- dat %>%
-    dplyr::filter(type == 9, E == 0) %>%
-    dplyr::pull(count) %>%
-    magrittr::multiply_by(Mprop[[1L]])
+  M.count.E0 <- dat |>
+    dplyr::filter(.data$type == 9, .data$E == 0) |>
+    dplyr::pull(.data$count) |>
+    (\(x) x * Mprop[[1L]])()
   if (includeE){
     heteroInds.E1 <- with(dat, which(type == 9 & E == 1))
-    M.count.E1 <- dat %>%
-      dplyr::filter(type == 9, E == 1) %>%
-      dplyr::pull(count) %>%
-      magrittr::multiply_by(Mprop[[2L]])
+    M.count.E1 <- dat |>
+      dplyr::filter(.data$type == 9, .data$E == 1) |>
+      dplyr::pull(.data$count) |>
+      (\(x) x * Mprop[[2L]])()
 
-    PoO_dat <- dat %>%
-      dplyr::left_join(PoO_df %>% dplyr::select(type, matOrg, patOrg), by = "type") %>%
-      dplyr::mutate(count = base::replace(count, is.na(patOrg) & E == 0, M.count.E0),
-                    count = base::replace(count, is.na(patOrg) & E == 1, M.count.E1),
-                    matOrg = base::replace(matOrg, is.na(matOrg), 1),
-                    patOrg = base::replace(patOrg, is.na(patOrg), 0)) %>%
-      dplyr::add_row(dat %>%
-                       dplyr::filter(dplyr::row_number() %in% heteroInds.E0) %>%
+    PoO_dat <- dat |>
+      dplyr::left_join(PoO_df |> dplyr::select("type", "matOrg", "patOrg"), by = "type") |>
+      dplyr::mutate(count = base::replace(.data$count, is.na(.data$patOrg) & .data$E == 0, M.count.E0),
+                    count = base::replace(.data$count, is.na(.data$patOrg) & .data$E == 1, M.count.E1),
+                    matOrg = base::replace(.data$matOrg, is.na(.data$matOrg), 1),
+                    patOrg = base::replace(.data$patOrg, is.na(.data$patOrg), 0)) |>
+      dplyr::add_row(dat |>
+                       dplyr::filter(dplyr::row_number() %in% heteroInds.E0) |>
                        dplyr::mutate(count = dat$count[heteroInds.E0] - M.count.E0,
                                      matOrg = 0,
-                                     patOrg = 1)) %>%
-      dplyr::add_row(dat %>%
-                       dplyr::filter(dplyr::row_number() %in% heteroInds.E1) %>%
+                                     patOrg = 1)) |>
+      dplyr::add_row(dat |>
+                       dplyr::filter(dplyr::row_number() %in% heteroInds.E1) |>
                        dplyr::mutate(count = dat$count[heteroInds.E1] - M.count.E1,
                                      matOrg = 0,
-                                     patOrg = 1)) %>%
-      dplyr::arrange(dplyr::desc(D), dplyr::desc(E), type, dplyr::desc(matOrg)) %>%
+                                     patOrg = 1)) |>
+      dplyr::arrange(dplyr::desc(.data$D), dplyr::desc(.data$E), .data$type, dplyr::desc(.data$matOrg)) |>
       dplyr::mutate(typeOrig = base::rep(1:16, dplyr::n()/16),
-                    Im = matOrg * D,
-                    If = patOrg * D) %>%
-      dplyr::relocate(typeOrig)
+                    Im = .data$matOrg * .data$D,
+                    If = .data$patOrg * .data$D) |>
+      dplyr::relocate("typeOrig")
   } else {
-    PoO_dat <- dat %>%
-      dplyr::left_join(PoO_df %>% dplyr::select(type, matOrg, patOrg), by = "type") %>%
-      dplyr::mutate(count = base::replace(count, is.na(patOrg), M.count.E0),
-                    matOrg = base::replace(matOrg, is.na(matOrg), 1),
-                    patOrg = base::replace(patOrg, is.na(patOrg), 0)) %>%
-      dplyr::add_row(dat %>%
-                       dplyr::filter(dplyr::row_number() %in% heteroInds.E0) %>%
+    PoO_dat <- dat |>
+      dplyr::left_join(PoO_df |> dplyr::select("type", "matOrg", "patOrg"), by = "type") |>
+      dplyr::mutate(count = base::replace(.data$count, is.na(.data$patOrg), M.count.E0),
+                    matOrg = base::replace(.data$matOrg, is.na(.data$matOrg), 1),
+                    patOrg = base::replace(.data$patOrg, is.na(.data$patOrg), 0)) |>
+      dplyr::add_row(dat |>
+                       dplyr::filter(dplyr::row_number() %in% heteroInds.E0) |>
                        dplyr::mutate(count = dat$count[heteroInds.E0] - M.count.E0,
                                      matOrg = 0,
-                                     patOrg = 1)) %>%
-      dplyr::arrange(dplyr::desc(D), dplyr::desc(E), type, dplyr::desc(matOrg)) %>%
+                                     patOrg = 1)) |>
+      dplyr::arrange(dplyr::desc(.data$D), dplyr::desc(.data$E), .data$type, dplyr::desc(.data$matOrg)) |>
       dplyr::mutate(typeOrig = base::rep(1:16, dplyr::n()/16),
-                    Im = matOrg * D,
-                    If = patOrg * D) %>%
-      dplyr::relocate(typeOrig)
+                    Im = .data$matOrg * .data$D,
+                    If = .data$patOrg * .data$D) |>
+      dplyr::relocate("typeOrig")
   }
   return(PoO_dat)
 }
@@ -59,13 +59,13 @@ add_PoO_data <- function(dat, Mprop, includeE) {
 add_PoO_data_15 <- function(dat) {
   # Portion of model equation and offset depends on mating type model
   heteroInds <- with(dat, which(type == 9))
-  PoO_dat <- dat %>%
-    dplyr::left_join(PoO_df, by = c("M", "F", "C")) %>%
-    dplyr::mutate(matOrg = replace(matOrg, is.na(matOrg), 0),
-                  patOrg = replace(patOrg, is.na(patOrg), 0)) %>%
-    dplyr::mutate(Im = matOrg * D,
-                  If = patOrg * D) %>%
-    dplyr::arrange(desc(D), desc(E), type, desc(matOrg))
+  PoO_dat <- dat |>
+    dplyr::left_join(PoO_df, by = c("M", "F", "C")) |>
+    dplyr::mutate(matOrg = replace(.data$matOrg, is.na(.data$matOrg), 0),
+                  patOrg = replace(.data$patOrg, is.na(.data$patOrg), 0)) |>
+    dplyr::mutate(Im = .data$matOrg * .data$D,
+                  If = .data$patOrg * .data$D) |>
+    dplyr::arrange(dplyr::desc(.data$D), dplyr::desc(.data$E), .data$type, dplyr::desc(.data$matOrg))
   return(PoO_dat)
 }
 
@@ -97,116 +97,6 @@ cov_trill <- function(y, L, a, b, mu){
   }
 }
 
-summ_haplin <- function(res, PoO = FALSE, includeE = FALSE){
-  resVec <- c()
-  pvalVec <- c()
-  if(includeE && PoO){
-    GEtest <- Haplin::gxe(res)
-    resVec["M[E=1]"]=Haplin::haptable(res)[6,"RRm.est."] #RR for E=1, M=1
-    resVec["M[E=0]"]=Haplin::haptable(res)[4,"RRm.est."]  #RR for E=0, M=1
-    resVec["E:M"]=resVec["M[E=1]"]/resVec["M[E=0]"]
-    pvalVec["E:M"]=GEtest$gxe.test[3,"pval"] # pval for stratified test
-    pvalVec["M"]=Haplin::haptable(res)[2,"RRm.p.value"] # pval for unstratified analysis
-    resVec["Im"] <- Haplin::haptable(res)[2,"RRcm.est."]
-    pvalVec["Im"] <- Haplin::haptable(res)[2,"RRcm.p.value"]
-    resVec["If"] <- Haplin::haptable(res)[2,"RRcf.est."]
-    pvalVec["If"] <- Haplin::haptable(res)[2,"RRcf.p.value"]
-  }
-  else if(includeE){
-    GEtest <- Haplin::gxe(res)
-    resVec["M[E=1]"]=Haplin::haptable(res)[6,"RRm.est."] #RR for E=1, M=1
-    resVec["M[E=0]"]=Haplin::haptable(res)[4,"RRm.est."]  #RR for E=0, M=1
-    resVec["E:M"]=resVec["M[E=1]"]/resVec["M[E=0]"]
-    pvalVec["E:M"]=GEtest$gxe.test[3,"pval"] # pval for stratified test
-    pvalVec["M"]=Haplin::haptable(res)[2,"RRm.p.value"] # pval for unstratified analysis
-    resVec["C"]=Haplin::haptable(res)[2,"RR.est."]
-    pvalVec["C"]=Haplin::haptable(res)[2,"RR.p.value"]
-  }
-  else if(PoO){
-    res <- Haplin::haptable(res)[2,]
-    resVec["M"] <- res$RRm.est
-    pvalVec["M"] <- res$RRm.p.value
-    resVec["Im"] <- res$RRcm.est
-    pvalVec["Im"] <- res$RRcm.p.value
-    resVec["If"] <- res$RRcf.est
-    pvalVec["If"] <- res$RRcf.p.value
-  }
-  else{
-    res <- Haplin::haptable(res)[2,]
-    resVec["C"] <- res$RR.est.
-    pvalVec["C"] <- res$RR.p.value
-    resVec["M"] <- res$RRm.est.
-    pvalVec["M"] <- res$RRm.p.value
-  }
-  return(list(effects = resVec, pvals = pvalVec))
-}
-
-summ_emim <- function(res){
-  resVec <- c()
-  sdVec <- c()
-  pvalVec <- c()
-  if(attr(res, "includeE")) {
-    list2env(res, envir = environment())
-    resVec["C"] <- exp(resAll$lnR1)
-    sdVec["C"] <- resAll$sd_lnR1
-    resVec["M"] <- exp(resAll$lnS1)
-    sdVec["M"] <- resAll$sd_lnS1
-    pvalVec["C"] <- 2 * pnorm(abs(resAll$lnR1 / resAll$sd_lnR1), lower = F)
-    pvalVec["M"] <- 2 * pnorm(abs(resAll$lnS1 / resAll$sd_lnS1), lower = F)
-    resVec["Im"] <- exp(resAll$lnIm)
-    resVec["If"] <- exp(resAll$lnIp)
-
-    if(attr(res, "Einteraction") == "M"){
-      resVec <- resVec[! names(resVec) == "M"]
-      resVec["M[E=0]"] <- exp(res0$lnS1)
-      resVec["M[E=1]"] <- exp(res1$lnS1)
-      resVec["E:M"] <- resVec["M[E=1]"] / resVec["M[E=0]"]
-
-      # Get a Wald-type GE test like Haplin
-      z <- abs(res0$lnS1 - res1$lnS1) / sqrt(res0$sd_lnS1^2 + res1$sd_lnS1^2)
-      pvalVec["E:M"] <- 2 * pnorm(z, lower = F)
-    } else if(attr(res, "Einteraction") == "Im"){ ## CHeck over notes
-      resVec <- resVec[! names(resVec) == "Im"]
-      resVec["Im[E=0]"] <- exp(res0$lnIm)
-      resVec["Im[E=1]"] <- exp(res1$lnIm)
-      resVec["E:Im"] <- resVec["Im[E=1]"] / resVec["Im[E=0]"]
-
-      # Get a Wald-type GE test like Haplin
-      z <- abs(res0$lnIm - res1$lnIm) / sqrt(res0$sd_lnIm^2 + res1$sd_lnIm^2)
-      pvalVec["E:Im"] <- 2 * pnorm(z, lower = F)
-    } else if(attr(res, "Einteraction") == "If"){
-      resVec <- resVec[! names(resVec) == "If"]
-      resVec["If[E=0]"] <- exp(res0$lnIp)
-      resVec["If[E=1]"] <- exp(res1$lnIp)
-      resVec["E:If"] <- resVec["If[E=1]"] / resVec["If[E=0]"]
-
-      # Get a Wald-type GE test like Haplin
-      z <- abs(res0$lnIp - res1$lnIp) / sqrt(res0$sd_lnIp^2 + res1$sd_lnIp^2)
-      pvalVec["E:If"] <- 2 * pnorm(z, lower = F)
-    }
-
-    sdVec["Im"] <- resAll$sd_lnIm
-    pvalVec["Im"] <- 2 * pnorm(abs(resAll$lnIm / resAll$sd_lnIm), lower = F)
-    sdVec["If"] <- resAll$sd_lnIp
-    pvalVec["If"] <- 2 * pnorm(abs(resAll$lnIp / resAll$sd_lnIp), lower = F)
-  } else {
-    resVec["C"] <- exp(res$lnR1)
-    sdVec["C"] <- res$sd_lnR1
-    pvalVec["C"] <- 2 * pnorm(abs(res$lnR1 / res$sd_lnR1), lower = F)
-    resVec["M"] <- exp(res$lnS1)
-    sdVec["M"] <- res$sd_lnS1
-    pvalVec["M"] <- 2 * pnorm(abs(res$lnS1 / res$sd_lnS1), lower = F)
-    resVec["Im"] <- exp(res$lnIm)
-    sdVec["Im"] <- res$sd_lnIm
-    pvalVec["Im"] <- 2 * pnorm(abs(res$lnIm / res$sd_lnIm), lower = F)
-    resVec["If"] <- exp(res$lnIp)
-    sdVec["If"] <- res$sd_lnIp
-    pvalVec["If"] <- 2 * pnorm(abs(res$lnIp / res$sd_lnIp), lower = F)
-  }
-  return(list(effects = resVec, se = sdVec, pvals = pvalVec))
-}
-
-
 ## Create df with rows for every possible trio
 createGenoMat <- function() {
   M <- c(rep(0, 3), rep(1, 2), 0, 2, rep(1, 6), rep(2, 3))
@@ -231,8 +121,8 @@ mtmat <- function(maf = 0.4, C = c(1, 1, 1)) {
   genocat <- createGenoMat()
   mts <- unique(genocat[, 1:2])
 
-  Mprobs <- dbinom(mts[, 1], 2, prob = maf)
-  Fprobs <- dbinom(mts[, 2], 2, prob = maf)
+  Mprobs <- stats::dbinom(mts[, 1], 2, prob = maf)
+  Fprobs <- stats::dbinom(mts[, 2], 2, prob = maf)
 
   asymfactor <- c(1, 2 - C[1], C[1],
                   2 - C[2], C[2], 1,
@@ -334,12 +224,12 @@ simulateDataSubset <- function(ntrios = 1000, maf = 0.3,
   }
 
   triodat <- data.frame(triodat[, 1:6], E = E, D = D, triodat[, 7:ncol(triodat)])
-  subdat <- data.frame(triodat[, c(1:8)], count = triodat$count) %>%
-    dplyr::group_by(mt_MS, mt_MaS, M, F, C, E, D) %>%
-    dplyr::summarise_at(dplyr::vars(count), sum) %>%
-    dplyr::ungroup() %>%
-    dplyr::mutate(type = 1:15) %>%
-    dplyr::relocate(type) %>%
+  subdat <- data.frame(triodat[, c(1:8)], count = triodat$count) |>
+    dplyr::group_by(.data$mt_MS, .data$mt_MaS, .data$M, .data$F, .data$C, .data$E, .data$D) |>
+    dplyr::summarise_at(dplyr::vars("count"), sum) |>
+    dplyr::ungroup() |>
+    dplyr::mutate(type = 1:15) |>
+    dplyr::relocate("type") |>
     as.data.frame()
 
   # Prepare data for Haplin. Haplin has 1 row per trio, with the row
@@ -354,12 +244,12 @@ simulateDataSubset <- function(ntrios = 1000, maf = 0.3,
   # } else{
   haplingeno <- data.frame(typeOrig = 1:16, haplingeno)
   # }
-  haplindat <- merge(haplingeno, triodat, by = "typeOrig") %>%
-    dplyr::group_by(M.x, F.x, C.x, mt_MS, mt_MaS, E, D, prMF) %>%
-    dplyr::summarise_at(dplyr::vars(count), sum) %>%
-    dplyr::ungroup() %>%
-    dplyr::mutate(type = 1:15) %>%
-    dplyr::relocate(type) %>%
+  haplindat <- merge(haplingeno, triodat, by = "typeOrig") |>
+    dplyr::group_by(.data$M.x, .data$F.x, .data$C.x, .data$mt_MS, .data$mt_MaS, .data$E, .data$D, .data$prMF) |>
+    dplyr::summarise_at(dplyr::vars("count"), sum) |>
+    dplyr::ungroup() |>
+    dplyr::mutate(type = 1:15) |>
+    dplyr::relocate("type") |>
     as.data.frame()
 
   finaldat <- NULL

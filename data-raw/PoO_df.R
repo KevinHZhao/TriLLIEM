@@ -11,4 +11,4 @@ patOrg <- c(rep(0, 2), 1, rep(0, 2), 1, 0, 0, NA, 1, 1, 1, 0, 1, 1)
 
 PoO_df <- data.frame(type, M, F, C, matOrg, patOrg)
 
-usethis::use_data(PoO_df, overwrite = TRUE)
+usethis::use_data(PoO_df, overwrite = TRUE, internal = TRUE)
