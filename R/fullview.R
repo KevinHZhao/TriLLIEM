@@ -41,13 +41,13 @@
 #' fullview(dat1)
 #'
 #' dat2 <- simulateData(
-#'   nControl = 1000,
-#'   propE = c(0.1, 0.4),
-#'   propE.control = c(0.2, 0.2),
-#'   nPop = 2,
-#'   maf = c(0.3, 0.4),
-#'   prev.byPop = c(0.2, 0.3),
-#'   prop.byPop = c(0.6, 0.4)
+#'     nControl = 1000,
+#'     propE = c(0.1, 0.4),
+#'     propE.control = c(0.2, 0.2),
+#'     nPop = 2,
+#'     maf = c(0.3, 0.4),
+#'     prev.byPop = c(0.2, 0.3),
+#'     prop.byPop = c(0.6, 0.4)
 #'  )
 #' fullview(dat2)
 fullview <- function (sim) {

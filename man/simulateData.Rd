@@ -170,21 +170,21 @@ simulateData(nControl = 1000, V = c(1, 1.6, 1.6^2), propE = 0.3, Einteraction = 
 
 ## Null model with 3 different sub-populations
 simulateData(
-  nPop = 3,
-  maf = c(0.1, 0.2, 0.3),
-  prev.byPop = c(0.2, 0.1, 0.4),
-  prop.byPop = c(0.3, 0.3, 0.4)
+    nPop = 3,
+    maf = c(0.1, 0.2, 0.3),
+    prev.byPop = c(0.2, 0.1, 0.4),
+    prop.byPop = c(0.3, 0.3, 0.4)
 )
 
 ## Null model with 2 different sub-populations, environmental exposures, and controls
 simulateData(
-  nControl = 1000,
-  propE = c(0.1, 0.4),
-  propE.control = c(0.2, 0.2),
-  nPop = 2,
-  maf = c(0.3, 0.4),
-  prev.byPop = c(0.2, 0.3),
-  prop.byPop = c(0.6, 0.4)
+    nControl = 1000,
+    propE = c(0.1, 0.4),
+    propE.control = c(0.2, 0.2),
+    nPop = 2,
+    maf = c(0.3, 0.4),
+    prev.byPop = c(0.2, 0.3),
+    prop.byPop = c(0.6, 0.4)
  )
 
 }

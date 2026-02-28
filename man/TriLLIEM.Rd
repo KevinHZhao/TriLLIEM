@@ -2,7 +2,7 @@
 % Please edit documentation in R/TriLLIEM.R
 \name{TriLLIEM}
 \alias{TriLLIEM}
-\title{Fit the log-linear model to trio data.}
+\title{Fit the log-linear model to trio data}
 \usage{
 TriLLIEM(
   mtmodel = "MS",
@@ -139,8 +139,7 @@ computing residuals and AIC.
 res1 <- TriLLIEM(mtmodel = "HWE", effects = c("C", "M", "Im"), dat = example_dat4R)
 summary(res1)
 
-dat <-
-  simulateData(
+dat <- simulateData(
     nControl = 1000,
     propE = c(0.1, 0.4),
     propE.control = c(0.2, 0.2),
@@ -148,36 +147,33 @@ dat <-
     maf = c(0.3, 0.4),
     prev.byPop = c(0.2, 0.3),
     prop.byPop = c(0.6, 0.4)
-  )
+)
 ## Obtain the non-stratified and stratified models and compare them via anova
-res2 <-
-  TriLLIEM(
+res2 <- TriLLIEM(
     mtmodel = "HWE",
     effects = c("C", "M", "Im", "E:Im"),
     dat = dat,
     includeE = TRUE,
     includeD = TRUE
-  )
-res3 <-
-  TriLLIEM(
+)
+res3 <- TriLLIEM(
     mtmodel = "HWE",
     effects = c("C", "M", "Im", "E:Im"),
     dat = dat,
     includeE = TRUE,
     Estrat = TRUE,
     includeD = TRUE
-  )
+)
 anova(res2, res3)
 
 ## Compare non-stratified model to a model without E by setting Eanova = TRUE
-res4 <-
-  TriLLIEM(
+res4 <- TriLLIEM(
     mtmodel = "HWE",
     effects = c("C", "M", "Im"),
     dat = dat,
     Eanova = TRUE,
     includeD = TRUE
-  )
+)
 
 anova(res2, res4)
 
