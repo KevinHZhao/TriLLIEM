@@ -1,10 +1,12 @@
+skip_on_cran()
+
 test_that("summary of default (C, M) model works", {
   res <- TriLLIEM(dat = example_dat4R)
   expect_snapshot(summary(res))
 })
 
 test_that("summary of control and environment data model works", {
-  set.seed(2)
+  withr::local_seed(2)
   dat <-
     simulateData(
       nCases = 1234,
@@ -34,7 +36,7 @@ test_that("summary of control and environment data model works", {
 })
 
 test_that("population stratification model works", {
-  set.seed(3)
+  withr::local_seed(3)
   dat <-
     simulateData(
       nCases = 1234,

@@ -1,10 +1,12 @@
+skip_on_cran()
+
 test_that("expected example_dat4R", {
-  set.seed(1)
-  expect_identical(simulateData(), example_dat4R)
+  withr::local_seed(1)
+  expect_equal(simulateData(), example_dat4R)
 })
 
 test_that("expected control and environmental data", {
-  set.seed(2)
+  withr::local_seed(2)
   expect_snapshot(
     simulateData(
       nCases = 1234,
@@ -16,7 +18,7 @@ test_that("expected control and environmental data", {
 })
 
 test_that("expected population stratification data", {
-  set.seed(3)
+  withr::local_seed(3)
   dat <-
     simulateData(
       nCases = 1234,

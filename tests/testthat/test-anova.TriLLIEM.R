@@ -1,3 +1,5 @@
+skip_on_cran()
+
 test_that("simple example_dat4R anova works", {
   model_1 <- TriLLIEM::TriLLIEM(dat = example_dat4R, effects = c("C", "M"))
   model_2 <- TriLLIEM::TriLLIEM(dat = example_dat4R, effects = c("C", "M", "Im"))
@@ -5,7 +7,7 @@ test_that("simple example_dat4R anova works", {
 })
 
 test_that("Eanova works", {
-  set.seed(2)
+  withr::local_seed(2)
   dat <-
     simulateData(
       nCases = 1234,

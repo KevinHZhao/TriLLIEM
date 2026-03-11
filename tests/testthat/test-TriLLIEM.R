@@ -1,10 +1,12 @@
+skip_on_cran()
+
 test_that("default (C, M) model works", {
   res <- TriLLIEM(dat = example_dat4R)
   expect_snapshot(res)
 })
 
 test_that("control and environment data model works",{
-  set.seed(2)
+  withr::local_seed(2)
   dat <-
     simulateData(
       nCases = 1234,

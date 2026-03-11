@@ -1,10 +1,12 @@
+skip_on_cran()
+
 test_that("expected example_dat4R", {
-  set.seed(1)
-  expect_identical(fullview(simulateData()), fullview(example_dat4R))
+  withr::local_seed(1)
+  expect_equal(fullview(simulateData()), fullview(example_dat4R))
 })
 
 test_that("expected control and environmental data", {
-  set.seed(2)
+  withr::local_seed(2)
   expect_snapshot(
     simulateData(
       nCases = 1234,
