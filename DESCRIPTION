@@ -1,7 +1,7 @@
 Package: TriLLIEM
 Type: Package
 Title: Log-Linear Modelling of Triad Genotype Data
-Version: 0.1.0
+Version: 0.1.1
 Authors@R: c(
     person("Kevin Heda", "Zhao", email = "trilliemmaintainer@gmail.com", role = c("aut", "cre")),
     person("Kelly", "Burkett", email = "kburkett@uottawa.ca", role = "aut"))
